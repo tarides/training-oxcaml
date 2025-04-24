@@ -1,0 +1,10 @@
+(library
+ (name session)
+ (libraries base))
+
+(cram
+ (deps
+  session.ml
+  (glob_files .session.objs/byte/*.cm?)
+  %{cma:session}))
+
