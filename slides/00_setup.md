@@ -35,4 +35,4 @@ opam install ocaml-lsp-server merlin utop ocamlformat
 ---
 # `dune pkg`
 
-TODO
+Work in progress

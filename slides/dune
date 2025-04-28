@@ -9,7 +9,7 @@
  (action
   (with-stdout-to
    %{target}
-   (run ./remark.exe %{deps} "OxCaml 0: Set-up"))))
+   (run ./remark.exe %{deps} "OxCaml 00: Set-up"))))
 
 (rule
  (deps 01_local_1.md)
@@ -18,4 +18,4 @@
  (action
   (with-stdout-to
    %{target}
-   (run ./remark.exe %{deps} "OxCaml 1: Locality 1"))))
+   (run ./remark.exe %{deps} "OxCaml 01: Locality 1"))))

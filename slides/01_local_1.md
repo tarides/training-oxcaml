@@ -79,7 +79,7 @@ Also: `_global`, `@ global` and `[@local_opt]`
 - In function types &mdash; **This is the most important**
   * Contract between caller and callee
   * `local` means in the caller's region
-  * Parameter: callee satisf caller's region
+  * Parameter: callee respects caller's locality
   * Result: callee stores in caller's region
   * This really defines 4 arrows
     ```ocaml
