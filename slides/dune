@@ -1,0 +1,21 @@
+(executable
+ (name remark)
+ (modules remark))
+
+(rule
+ (deps local-0.md)
+ (target local-0.html)
+ (mode promote)
+ (action
+  (with-stdout-to
+   %{target}
+   (run ./remark.exe %{deps} "OxCaml 0: Set-up"))))
+
+(rule
+ (deps local-1.md)
+ (target local-1.html)
+ (mode promote)
+ (action
+  (with-stdout-to
+   %{target}
+   (run ./remark.exe %{deps} "OxCaml 1: Locality"))))

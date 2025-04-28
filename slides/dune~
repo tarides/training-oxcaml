@@ -1,0 +1,12 @@
+(executable
+ (name remark)
+ (modules remark))
+
+(rule
+ (deps monad.md)
+ (target monad.html)
+ (mode promote)
+ (action
+  (with-stdout-to
+   %{target}
+   (run ./remark.exe %{deps}))))

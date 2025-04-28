@@ -31,6 +31,10 @@ opam install ocamlformat merlin ocaml-lsp-server utop
 3. What works
 
 ```ocaml
+Sys.ocaml_version;;
+```
+
+```ocaml
 let three () =
   let u = stack_ [4; 5; 6] in
   Base.List.length u + 0;;
@@ -72,6 +76,9 @@ let fourtytwo () =
 let f () = let s = stack_ (ref 42) in ();;
 ```
 
+```ocaml
+2+2;;
+```
 5. Questions
 
 6. Notes
