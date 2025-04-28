@@ -1,29 +1,23 @@
 
 ---
-# Code with locality mode
+# OxCaml with locality mode
 
 ```ocaml
 let f () =
   let u @ local = [3; 4; 5] in
   let len = Base.List.length u in
-  len
-```
+  len;;
 
-```ocaml
 let f () =
   let _local u = [3; 4; 5] in
   let len = Base.List.length u in
   len;;
-```
 
-```ocaml
 let f () =
   let u = _local [3; 4; 5] in
   let len = Base.List.length u in
   len;;
-```
 
-```ocaml
 let f () =
   let u = _stack [3; 4; 5] in
   let len = Base.List.length u in
@@ -85,8 +79,8 @@ Also: `_global`, `@ global` and `[@local_opt]`
 - In function types &mdash; **This is the most important**
   * Contract between caller and callee
   * `local` means in the caller's region
-  * Parameter: function respects caller's region
-  * Result: function stores in caller's region
+  * Parameter: callee satisf caller's region
+  * Result: callee stores in caller's region
   * This really defines 4 arrows
     ```ocaml
     val f0 : s -> t * t                (* All global, legacy *)
@@ -95,6 +89,13 @@ Also: `_global`, `@ global` and `[@local_opt]`
     val f3 : local_ s -> local_ t * t
     ```
 
+---
+# What is `local` for?
+
+0. Low-latency code
+> More importantly, stack allocations will never trigger a GC, and so they're safe to use in low-latency code that must currently be zero-alloc
+1. Functions passed to higher-order iterators (such as `map`, `fold`, `bind` and others) are allocated on the stack
+2. Safer callbacks.
 
 ---
 # Hands-on
@@ -129,14 +130,16 @@ let f3 (local_ u : int list) = 42 :: u;;
 * This is expressed by and order on locality modes
 
 ```
-  t < _local t
+                       t < _local t
 
 
-  t -> local_ s
-   /        \
-t -> s      local_ t -> local_ s
-   \        /
-  local_ t -> s
+                       t -> local_ s
+                        /        \
+                       /          \
+                    t -> s    local_ t -> local_ s
+                       \          /
+                        \        /
+                      local_ t -> s
 ```
 
 ---
@@ -161,4 +164,5 @@ Verify mode “subtyping” rules
 ---
 # List length
 
-Write a list length function in imperative style, using a local reference `stack_ (ref 0)`
+Write a list length function in imperative style. Use a `stack_ (ref 0)` local mutable counter that stores the number of traversed list elements.
+
