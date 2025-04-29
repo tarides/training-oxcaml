@@ -75,7 +75,7 @@ Also: `global_`, `@ global` and `[@local_opt]`
 # What does `local` mean?
 
 - The value does not escape its region
-  * Neither result nor exception payload
+  * Neither function result nor exception payload
   * Not captured in closure, not referred from mutable area
   * Not reachable from a heap allocated value
   * Freed at its region's end, without triggering the GC
