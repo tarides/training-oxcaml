@@ -1,30 +1,33 @@
 
 ---
-# OxCaml with locality mode
+# Locality Mode OxCaml
 
 ```ocaml
 let f () =
   let u @ local = [3; 4; 5] in
   let len = Base.List.length u in
   len;;
-
+```
+```ocaml
 let f () =
-  let _local u = [3; 4; 5] in
+  let local_ u = [3; 4; 5] in
   let len = Base.List.length u in
   len;;
-
+```
+```ocaml
 let f () =
-  let u = _local [3; 4; 5] in
+  let u = local_ [3; 4; 5] in
   let len = Base.List.length u in
   len;;
-
+```
+```ocaml
 let f () =
-  let u = _stack [3; 4; 5] in
+  let u = stack_ [3; 4; 5] in
   let len = Base.List.length u in
   len;;
 ```
 
-Also: `_global`, `@ global` and `[@local_opt]`
+Also: `global_`, `@ global` and `[@local_opt]`
 
 ---
 # **Type**: what it is &mdash; **Mode**: how it's used
@@ -58,8 +61,8 @@ Also: `_global`, `@ global` and `[@local_opt]`
   - Loop bodies
   - Lazy expressions
   - Module level bindings
-* Inference decides where to allocate, defaults to the stack
-* Regions nest and are wider than scopes
+* Inference decides how to allocate, defaults to the stack
+* Regions can nest and are wider than scopes
   ```ocaml
   let f () =
     let foo =
@@ -95,29 +98,43 @@ Also: `_global`, `@ global` and `[@local_opt]`
 0. Low-latency code
 > More importantly, stack allocations will never trigger a GC, and so they're safe to use in low-latency code that must currently be zero-alloc
 1. Functions passed to higher-order iterators (such as `map`, `fold`, `bind` and others) are allocated on the stack
-2. Safer callbacks.
+2. Safer callbacks
 
 ---
 # Hands-on
 
 ```ocaml
-let g1 () = let a = 2 * 3 * 14 in x;;
+let monday () = let str = "mon" ^ "day" in str;;
+```
 
-let bye () = let message = "ciao" in failwith message;;
+```ocaml
+let bye () = let ciao = "sorry" in failwith ciao;;
+```
 
+```ocaml
 let make_counter () =
-  let counter = ref 0 in
-  fun () -> let n = !counter in incr counter; n;;
+  let counter = ref (-1) in
+  fun () -> incr counter; !counter;;
+```
 
+```ocaml
 let state = ref ""
 let set () = state := "disco";;
+```
 
+```ocaml
 let rec map f = function [] -> [] | x :: u -> f x :: map f u;;
+```
 
+```ocaml
 let f1 (local_ u : int list) = [1; 2; 3];;
+```
 
-let f2 (local_ u : int list) = x;;
+```ocaml
+let f2 (local_ u : int list) = u;;
+```
 
+```ocaml
 let f3 (local_ u : int list) = 42 :: u;;
 ```
 
@@ -130,7 +147,7 @@ let f3 (local_ u : int list) = 42 :: u;;
 * This is expressed by and order on locality modes
 
 ```
-                       t < _local t
+                  t < local_ t        s < local_ s
 
 
                        t -> local_ s
@@ -141,9 +158,10 @@ let f3 (local_ u : int list) = 42 :: u;;
                         \        /
                       local_ t -> s
 ```
+* No mode polymorphism! Can't use `'a -> local_ 'b` when `'a -> 'b` is needed
 
 ---
-# Mode Ordering, exercise
+# Locality Mode Ordering, cont'd
 
 ```ocaml
 let f0 : string -> int * int = fun _ -> (3, 14);;
@@ -153,10 +171,10 @@ let f3 : local_ string -> local_ int * int = fun _ -> exclave_ (3, 14);;
 ```
 
 ```ocaml
-let top : (string -> _local int * int) -> unit = fun f -> assert false
+let top : (s -> local_ int * int) -> unit = fun f -> assert false
 let lft : (string -> int * int) -> unit = fun f -> assert false
 let rht : (local_ string -> local_ int * int) -> unit = fun f -> assert false
-let bot : (_local string -> int * int) -> unit = fun f -> assert false
+let bot : (local_ string -> int * int) -> unit = fun f -> assert false
 ```
 
 Verify mode “subtyping” rules
@@ -166,3 +184,18 @@ Verify mode “subtyping” rules
 
 Write a list length function in imperative style. Use a `stack_ (ref 0)` local mutable counter that stores the number of traversed list elements.
 
+---
+# Subtyping Cheat Sheet
+
+```
+               int32 < int64    ascii_str < utf8_str
+
+
+                       int32 -> utf8_str
+                        /        \
+                       /          \
+          int32 -> ascii_str    int64 -> utf8_str
+                       \          /
+                        \        /
+                       int64 -> ascii_str
+```
