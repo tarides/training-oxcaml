@@ -27,7 +27,7 @@ let f () =
   len;;
 ```
 
-Also: `global_`, `@ global` and `[@local_opt]`
+Other keywords `global_`, `@ global`, `exclave_` and `[@local_opt]`
 
 ---
 # **Type**: what it is &mdash; **Mode**: how it's used
@@ -139,6 +139,12 @@ let f3 (local_ u : int list) = 42 :: u;;
 ```
 
 ---
+# List length
+
+* Write a list length function in imperative style, using a **local counter**
+* Use a `stack_ (ref 0)` local mutable counter that stores the number of traversed list elements
+
+---
 # Locality Mode Ordering
 
 * Key idea: a heap allocated value may respect the `local` contract
@@ -178,11 +184,6 @@ let bot : (local_ string -> int * int) -> unit = fun f -> assert false
 ```
 
 Verify mode “subtyping” rules
-
----
-# List length
-
-Write a list length function in imperative style. Use a `stack_ (ref 0)` local mutable counter that stores the number of traversed list elements.
 
 
 ---
