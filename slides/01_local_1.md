@@ -184,18 +184,14 @@ Verify mode “subtyping” rules
 
 Write a list length function in imperative style. Use a `stack_ (ref 0)` local mutable counter that stores the number of traversed list elements.
 
+
 ---
-# Subtyping Cheat Sheet
+# In the next episodes
 
-```
-               int32 < int64    ascii_str < utf8_str
-
-
-                       int32 -> utf8_str
-                        /        \
-                       /          \
-          int32 -> ascii_str    int64 -> utf8_str
-                       \          /
-                        \        /
-                       int64 -> ascii_str
-```
+* Longer examples
+* Locality and closures
+* Locality and mutability
+* Locality and tail calls
+* Locality, currying and partial applications
+* `[@local_opt]` limited mode polymorphism
+* More on `exclave_`
