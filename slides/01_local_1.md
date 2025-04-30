@@ -4,30 +4,30 @@
 
 ```ocaml
 let f () =
-  let u @ local = [3; 4; 5] in
+  let u @ local = [6; 2; 8] in
   let len = Base.List.length u in
   len;;
 ```
 ```ocaml
 let f () =
-  let local_ u = [3; 4; 5] in
+  let local_ u = [6; 2; 8] in
   let len = Base.List.length u in
   len;;
 ```
 ```ocaml
 let f () =
-  let u = local_ [3; 4; 5] in
+  let u : int list @@ local = stack_ [6; 2; 8] in
   let len = Base.List.length u in
   len;;
 ```
 ```ocaml
 let f () =
-  let u = stack_ [3; 4; 5] in
+  let u = local_ [6; 2; 8] in
   let len = Base.List.length u in
   len;;
 ```
 
-Other keywords `global_`, `@ global`, `exclave_` and `[@local_opt]`
+Other keywords to spot: `stack_`, `global_`, `@ global`, `exclave_` and `[@local_opt]`
 
 ---
 # **Type**: what it is &mdash; **Mode**: how it's used
@@ -144,6 +144,22 @@ let f3 (local_ u : int list) = 42 :: u;;
 * Write a list length function in imperative style, using a **local counter**
 * Use a `stack_ (ref 0)` local mutable counter that stores the number of traversed list elements
 
+---
+# Taking a look at _Hello World_
+
+```ocaml
+external globalize_string : string @ local -> string = "%obj_dup"
+
+let () =
+  let local_message : string @@ local = "Hello, World" in
+  (* Can't print [local_message] -- the value would escape. *)
+
+  let global_message = globalize_string local_message in
+  (* Copy the string to create a new global value. *)
+
+  print_endline global_message
+;;
+```
 ---
 # Locality Mode Ordering
 
