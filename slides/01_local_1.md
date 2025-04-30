@@ -4,7 +4,7 @@
 
 ```ocaml
 let f () =
-  let u @ local = [6; 2; 8] in
+  let u @ local = [6; 2; 8] in (* mode *)
   let len = Base.List.length u in
   len;;
 ```
@@ -16,7 +16,7 @@ let f () =
 ```
 ```ocaml
 let f () =
-  let u : int list @@ local = stack_ [6; 2; 8] in
+  let u : int list @@ local = stack_ [6; 2; 8] in (* modality *)
   let len = Base.List.length u in
   len;;
 ```
