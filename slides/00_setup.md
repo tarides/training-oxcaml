@@ -20,6 +20,7 @@
 # Sources
 
 * GitHub
+  - [`tarides/training-oxcaml`](https://github.com/tarides/training-oxcaml) - Clone this
   - `ocaml-flambda/flambda-backend`, directory [`jane/docs`](https://github.com/ocaml-flambda/flambda-backend/tree/main/jane/doc)
   - `janestreet/opam-repository`, branch [`with-extensions`](`https://github.com/janestreet/opam-repository/tree/with-extensions`)
 * YouTube videos
@@ -67,10 +68,14 @@ opam repo add --rank=1 janestreet-with-extensions git+https://github.com/janestr
 opam switch 'set-invariant' '5.2.0+flambda2'
 ```
 
+Note: For some yet to be understood reason, this does not work if there's a reachable `dune-project` file anywhere above the directory where the local switch is created.
+
 ---
 # Install minimum platform
 
 ```shell
+opam install ocamlbuild.0.15.0+jst
+
 opam install ocaml-lsp-server merlin utop ocamlformat
 ```
 
