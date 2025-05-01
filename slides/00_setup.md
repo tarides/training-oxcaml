@@ -2,7 +2,7 @@
 ---
 # OxCaml
 
-* Jane Street's fork of OCaml
+* Jane Street's branch of OCaml
 * Oxidized OCaml, Rust-like features
 * Targetted at low-latency performances and easier code review
 * Modes
