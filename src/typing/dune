@@ -1,0 +1,6 @@
+(library (name typing))
+
+(cram
+ (deps
+  (glob_files .typing.objs/byte/*.cm?)
+  %{cma:typing}))
