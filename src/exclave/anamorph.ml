@@ -14,4 +14,4 @@ let rec unfold : (local_ 'a -> ('b, 'a) glocal_pair option) -> local_ 'a -> 'b l
   let local_ y = f x in
   match y with
     | Some { fst; snd } -> fst :: unfold f snd
-    | None -> [];;
+    | None -> []

@@ -1,0 +1,1 @@
+let () = Init.main ()
