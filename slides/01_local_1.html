@@ -136,13 +136,14 @@ Other keywords to spot: `stack_`, `global_`, `@ global`, `exclave_` and `[@local
   - Module level bindings
 * Inference decides how to allocate, defaults to the stack
 * Regions can nest and are wider than scopes
-  ```ocaml
-  let f () =
-    let foo =
-      let local_ bar = ("region", "scope") in
-      bar in
-    fst foo;;
-  ```
+
+```ocaml
+let f () =
+  let foo =
+    let local_ bar = ("region", "scope") in
+    bar in
+  fst foo;;
+```
 
 ---
 # What does `local` mean?

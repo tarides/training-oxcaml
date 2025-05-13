@@ -1,33 +1,4 @@
 
----
-# Locality Mode OxCaml
-
-```ocaml
-let f () =
-  let u @ local = [6; 2; 8] in (* mode *)
-  let len = Base.List.length u in
-  len;;
-```
-```ocaml
-let f () =
-  let local_ u = [6; 2; 8] in
-  let len = Base.List.length u in
-  len;;
-```
-```ocaml
-let f () =
-  let u : int list @@ local = stack_ [6; 2; 8] in (* modality *)
-  let len = Base.List.length u in
-  len;;
-```
-```ocaml
-let f () =
-  let u = local_ [6; 2; 8] in
-  let len = Base.List.length u in
-  len;;
-```
-
-Other keywords to spot: `stack_`, `global_`, `@ global`, `exclave_` and `[@local_opt]`
 
 ---
 # **Type**: what it is &mdash; **Mode**: how it's used
@@ -36,25 +7,29 @@ Other keywords to spot: `stack_`, `global_`, `@ global`, `exclave_` and `[@local
 <table style="border-collapse: collapse;">
 <thead>
 <tr>
-<th style="padding: 5px 10px;">Mode</th>
-<th style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black">Lifetime</th>
-<th style="padding: 5px 10px;">Allocation</th>
+<th style="padding: 5px 10px;">Application</th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black">
+                               <code class="remark-inline-code">t</code></th>
+<th style="padding: 5px 10px;"><code class="remark-inline-code">local t</code></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black"><code class="remark-inline-code">global</code> | missing</td>
-<td style="padding: 5px 10px;">MAY outlive its region</td>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-left: 1px solid black">MUST be on the heap</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black">
+                               <code class="remark-inline-code">t -> .</code></td>
+<td style="padding: 5px 10px;">✓</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-left: 1px solid black">✗</td>
 </tr>
 <tr>
-<td style="padding: 5px 10px;"><code class="remark-inline-code">local</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black">MUST NOT outlive its region</td>
-<td style="padding: 5px 10px;">MAY be on the stack</td>
+<td style="padding: 5px 10px;"><code class="remark-inline-code">local t -> .</code></td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black">✓</td>
+<td style="padding: 5px 10px;">✓</td>
 </tr>
 </tbody>
 </table>
 </div>
+
+Higher-order functions should usually mark their function arguments as local_, to allow local closures to be passed in.
 
 * Region: compile-time representation of a stack frame
   - Function bodies
