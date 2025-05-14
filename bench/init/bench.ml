@@ -10,7 +10,8 @@ let () =
     if i = 0 then ()
     else begin
       (* let _ = String.init (arg 1) (fun i -> char_of_int (i mod 256)) in *)
-      let _a = Array.init (arg 1) (fun i -> i mod 256) in
+      (* let _a = Array.init (arg 1) (fun i -> i mod 256) in *)
+      let _a = Base.Array.init (arg 1) ~f:(fun i -> i mod 256) in
       loop (i - 1)
     end
   in
