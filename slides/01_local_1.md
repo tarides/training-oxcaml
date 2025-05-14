@@ -1,5 +1,10 @@
 
 ---
+# Previously
+
+* [Set-up](00_setup.html)
+
+---
 # Locality Mode OxCaml
 
 ```ocaml

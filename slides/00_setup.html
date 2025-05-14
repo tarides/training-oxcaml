@@ -144,6 +144,16 @@ opam switch 'set-invariant' '5.2.0+flambda2'
 Note: For some yet to be understood reason, this does not work if there's a reachable `dune-project` file anywhere above the directory where the local switch is created.
 
 ---
+# `opam` local switch, single command
+
+```shell
+opam switch create . 5.2.0+flambda2 --repos oxcaml=git+https://github.com/janestreet/opam-repository.git#with-extensions,default
+
+eval $(opam env)
+
+opam install base.v0.18~preview.130.31+242
+```
+---
 # Install minimum platform
 
 ```shell
