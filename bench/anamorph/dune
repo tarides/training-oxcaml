@@ -1,0 +1,11 @@
+(executable (name bench) (modules bench) (enabled_if (= %{context_name} default)) (libraries base))
+
+(executable (name bench2) (modules bench2) (enabled_if (= %{context_name} stock)) (libraries base))
+
+(rule
+ (action
+  (with-stdout-to bench2.ml
+   (with-stdin-from bench.ml
+    (pipe-stdout
+     (run sed "s/local_ //g")
+     (run sed "s/global_ //g"))))))
