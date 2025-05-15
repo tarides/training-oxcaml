@@ -89,3 +89,8 @@ Not using versions numbers to let `opam` pick the up-to-date `+jst` ones.
 # `dune pkg`
 
 Work in progress. Update from @maiste expected soon.
+
+---
+# OxCaml with Nix
+
+Work in progress.

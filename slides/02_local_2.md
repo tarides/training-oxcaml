@@ -2,6 +2,9 @@
 ---
 # Previously
 
+* Slides an materials: [`https://github.com/tarides/training-oxcaml`](https://github.com/tarides/training-oxcaml)
+  - `src`: examples
+  - `slides`: slides
 * [Set-up](00_setup.html)
 * [Locality 1](01_local_1.html)
 
