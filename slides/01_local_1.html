@@ -165,10 +165,10 @@ let f () =
   * Result: callee stores in caller's region
   * This really defines 4 arrows
     ```ocaml
-    val f0 : s -> t * t                (* All global, legacy *)
-    val f1 : local_ s -> t * t
-    val f2 : s -> local_ t * t
-    val f3 : local_ s -> local_ t * t
+    val global_global : s -> t * t                (* Legacy *)
+    val local_global : local_ s -> t * t
+    val global_local : s -> local_ t * t
+    val local_local : local_ s -> local_ t * t
     ```
 
 ---
@@ -218,73 +218,11 @@ let f3 (local_ u : int list) = 42 :: u;;
 ```
 
 ---
-# List length
-
-* Write a list length function in imperative style, using a **local counter**
-* Use a `stack_ (ref 0)` local mutable counter that stores the number of traversed list elements
-
----
-# Taking a look at _Hello World_
-
-```ocaml
-external globalize_string : string @ local -> string = "%obj_dup"
-
-let () =
-  let local_message : string @@ local = "Hello, World" in
-  (* Can't print [local_message] -- the value would escape. *)
-
-  let global_message = globalize_string local_message in
-  (* Copy the string to create a new global value. *)
-
-  print_endline global_message
-;;
-```
----
-# Locality Mode Ordering
-
-* Key idea: a heap allocated value may respect the `local` contract
-* Examples: `map`, `fold` and `bind` higher-order parameters
-* It's always possible to promote a value from `global` to `local`
-* This is expressed by and order on locality modes
-
-```
-                  t < local_ t        s < local_ s
-
-
-                       t -> local_ s
-                        /        \
-                       /          \
-                    t -> s    local_ t -> local_ s
-                       \          /
-                        \        /
-                      local_ t -> s
-```
-* No mode polymorphism! Can't use `'a -> local_ 'b` when `'a -> 'b` is needed
-
----
-# Locality Mode Ordering, cont'd
-
-```ocaml
-let f0 : string -> int * int = fun _ -> (3, 14);;
-let f1 : local_ string -> int * int = fun _ -> (3, 14);;
-let f2 : string -> local_ int * int = fun _ -> exclave_ (3, 14);;
-let f3 : local_ string -> local_ int * int = fun _ -> exclave_ (3, 14);;
-```
-
-```ocaml
-let top : (s -> local_ int * int) -> unit = fun f -> assert false
-let lft : (string -> int * int) -> unit = fun f -> assert false
-let rht : (local_ string -> local_ int * int) -> unit = fun f -> assert false
-let bot : (local_ string -> int * int) -> unit = fun f -> assert false
-```
-
-Verify mode “subtyping” rules
-
-
----
 # In the next episodes
 
+* [Locality 2](02_local_2.html)
 * Longer examples
+* Globalizing
 * Locality and closures
 * Locality and mutability
 * Locality and tail calls

@@ -116,81 +116,28 @@ Base.List.map (spy String.length) [ "alice"; "bob" ];;
 ---
 # Locality and function types
 
-* Refers to the caller's region
-* Is a contract between caller and callee
-* Parameter: argument's locality is preserved
-* Result: allocated in the caller's region
-* Parameter contravariance: local argument accepted as global parameter
-* Result covariance: global result can go into local definition
-
-<div style="display: flex; justify-content: center;">
-<table style="border-collapse: collapse;">
-<thead>
-<tr>
-<th style="padding: 5px 10px;">Parameter</th>
-<th style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black">
-                               <code class="remark-inline-code">t</code></th>
-<th style="padding: 5px 10px;"><code class="remark-inline-code">local t</code></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black">
-                               <code class="remark-inline-code">t -> .</code></td>
-<td style="padding: 5px 10px;">✓</td>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-left: 1px solid black">✗</td>
-</tr>
-<tr>
-<td style="padding: 5px 10px;"><code class="remark-inline-code">local t -> .</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black">✓</td>
-<td style="padding: 5px 10px;">✓</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-<div style="display: flex; justify-content: center;">
-<table style="border-collapse: collapse;">
-<thead>
-<tr>
-<th style="padding: 5px 10px;">Result</th>
-<th style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black">
-                               <code class="remark-inline-code">s</code></th>
-<th style="padding: 5px 10px;"><code class="remark-inline-code">local s</code></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black">
-                               <code class="remark-inline-code">. -> s</code></td>
-<td style="padding: 5px 10px;">✓</td>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-left: 1px solid black">✓</td>
-</tr>
-<tr>
-<td style="padding: 5px 10px;"><code class="remark-inline-code">. -> local s</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black">✗</td>
-<td style="padding: 5px 10px;">✓</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-Higher-order functions should usually mark their function arguments as local_, to allow local closures to be passed in.
-
-* Region: compile-time representation of a stack frame
-  - Function bodies
-  - Loop bodies
-  - Lazy expressions
-  - Module level bindings
-* Inference decides how to allocate, defaults to the stack
-* Regions can nest and are wider than scopes
-  ```ocaml
-  let f () =
-    let foo =
-      let local_ bar = ("region", "scope") in
-      bar in
-    fst foo;;
-  ```
+```ocaml
+Base.List.length;;
+```
+```ocaml
+fun () -> let local_ foo = [1;2;3] in let len = Base.List.length foo in len;;
+```
+```ocaml
+let foo = [3; 4; 5];;
+```
+```ocaml
+Base.List.length foo;;
+```
+```ocaml
+let local_list : int -> local_ int list =
+  fun n -> exclave_ Base.List.init n ~f:Fun.id;;
+```
+```ocaml
+List.length (local_list 3);;
+```
+```ocaml
+Base.List.length (local_list 3);;
+```
 
 ---
 # Taking a look at _Hello World_
@@ -294,13 +241,11 @@ val with_file : (in_channel -> 'a) -> string -> 'a
 ---
 # In the next episodes
 
-* Longer examples
-* Locality and closures
+* [Locality 3](03_local_3.html)
 * Locality and mutability
 * Locality and tail calls
 * Locality, currying and partial applications
 * `[@local_opt]` limited mode polymorphism
-* More on `exclave_`
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">

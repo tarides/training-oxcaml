@@ -36,16 +36,22 @@
   - POPL 25: [Data Race Freedom à la Mode](https://dl.acm.org/doi/10.1145/3704859)
 
 ---
-# `opam` global switch, single command
+# `opam` switch, single command
 
-Git commit points to branch `with-extensions` as of December 10, 2024. Update from April 25, 2025 does not work good enough.
-
+Global switch
 
 ```shell
-opam switch create 5.2.0+flambda2 --repos janestreet-with-extensions=git+https://github.com/janestreet/opam-repository.git#3cb7f5ee49e3be100d322e4dd9be18aab28dd3e8,default
-
+opam switch create 5.2.0+flambda2 --repos oxcaml=git+https://github.com/janestreet/opam-repository.git#with-extensions,default
 
 eval $(opam env --switch "5.2.0+flambda2")
+```
+
+Local switch
+
+```shell
+opam switch create . 5.2.0+flambda2 --repos oxcaml=git+https://github.com/janestreet/opam-repository.git#with-extensions,default
+
+eval $(opam env)
 ```
 
 * Tip: `opam update` with care
@@ -63,7 +69,7 @@ opam switch create . --empty
 
 eval $(opam env)
 
-opam repo add --rank=1 janestreet-with-extensions git+https://github.com/janestreet/opam-repository.git#3cb7f5ee49e3be100d322e4dd9be18aab28dd3e8
+opam repo add --rank=1 oxcaml git+https://github.com/janestreet/opam-repository.git#with-extensions
 
 opam switch 'set-invariant' '5.2.0+flambda2'
 ```
@@ -71,25 +77,13 @@ opam switch 'set-invariant' '5.2.0+flambda2'
 Note: For some yet to be understood reason, this does not work if there's a reachable `dune-project` file anywhere above the directory where the local switch is created.
 
 ---
-# `opam` local switch, single command
-
-```shell
-opam switch create . 5.2.0+flambda2 --repos oxcaml=git+https://github.com/janestreet/opam-repository.git#with-extensions,default
-
-eval $(opam env)
-
-opam install base.v0.18~preview.130.31+242
-```
----
 # Install minimum platform
 
 ```shell
-opam install ocamlbuild.0.15.0+jst
-
 opam install ocaml-lsp-server merlin utop ocamlformat
 ```
 
-Not using versions numbers to let `opam` pick the right ones
+Not using versions numbers to let `opam` pick the up-to-date `+jst` ones.
 
 ---
 # `dune pkg`

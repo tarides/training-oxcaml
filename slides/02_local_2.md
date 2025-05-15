@@ -1,123 +1,70 @@
 
+---
+# Previously
+
+* [Set-up](00_setup.html)
+* [Locality 1](01_local_1.html)
 
 ---
-# **Type**: what it is &mdash; **Mode**: how it's used
-
-<div style="display: flex; justify-content: center;">
-<table style="border-collapse: collapse;">
-<thead>
-<tr>
-<th style="padding: 5px 10px;">Application</th>
-<th style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black">
-                               <code class="remark-inline-code">t</code></th>
-<th style="padding: 5px 10px;"><code class="remark-inline-code">local t</code></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black">
-                               <code class="remark-inline-code">t -> .</code></td>
-<td style="padding: 5px 10px;">✓</td>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-left: 1px solid black">✗</td>
-</tr>
-<tr>
-<td style="padding: 5px 10px;"><code class="remark-inline-code">local t -> .</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black">✓</td>
-<td style="padding: 5px 10px;">✓</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-Higher-order functions should usually mark their function arguments as local_, to allow local closures to be passed in.
-
-* Region: compile-time representation of a stack frame
-  - Function bodies
-  - Loop bodies
-  - Lazy expressions
-  - Module level bindings
-* Inference decides how to allocate, defaults to the stack
-* Regions can nest and are wider than scopes
-  ```ocaml
-  let f () =
-    let foo =
-      let local_ bar = ("region", "scope") in
-      bar in
-    fst foo;;
-  ```
-
----
-# What does `local` mean?
-
-- The value does not escape its region
-  * Neither function result nor exception payload
-  * Not captured in closure, not referred from mutable area
-  * Not reachable from a heap allocated value
-  * Freed at its region's end, without triggering the GC
-- In function types &mdash; **This is the most important**
-  * Contract between caller and callee
-  * `local` means in the caller's region
-  * Parameter: callee respects caller's locality
-  * Result: callee stores in caller's region
-  * This really defines 4 arrows
-    ```ocaml
-    val f0 : s -> t * t                (* All global, legacy *)
-    val f1 : local_ s -> t * t
-    val f2 : s -> local_ t * t
-    val f3 : local_ s -> local_ t * t
-    ```
-
----
-# What is `local` for?
-
-0. Low-latency code
-> More importantly, stack allocations will never trigger a GC, and so they're safe to use in low-latency code that must currently be zero-alloc
-1. Functions passed to higher-order iterators (such as `map`, `fold`, `bind` and others) are allocated on the stack
-2. Safer callbacks
-
----
-# Hands-on
+# What locality can do
 
 ```ocaml
-let monday () = let str = "mon" ^ "day" in str;;
+let dead_drop : string list ref = ref [];;
 ```
-
 ```ocaml
-let bye () = let ciao = "sorry" in failwith ciao;;
+let spy f x =
+  dead_drop := x :: !dead_drop;
+  f x;;
 ```
-
 ```ocaml
-let make_counter () =
-  let counter = ref (-1) in
-  fun () -> incr counter; !counter;;
+List.map (spy String.length) [ "alice"; "bob" ];;
 ```
-
 ```ocaml
-let state = ref ""
-let set () = state := "disco";;
+!dead_drop;;
 ```
-
 ```ocaml
-let rec map f = function [] -> [] | x :: u -> f x :: map f u;;
+let rec map (f : local_ 'a -> 'b) = function
+  | [] -> []
+  | x :: u -> f x :: map f u;;
 ```
-
 ```ocaml
-let f1 (local_ u : int list) = [1; 2; 3];;
+map (spy String.length) [ "alice"; "bob" ];;
 ```
-
 ```ocaml
-let f2 (local_ u : int list) = u;;
-```
-
-```ocaml
-let f3 (local_ u : int list) = 42 :: u;;
+Base.List.map (spy String.length) [ "alice"; "bob" ];;
 ```
 
 ---
 # List length
 
 * Write a list length function in imperative style, using a **local counter**
-* Use a `stack_ (ref 0)` local mutable counter that stores the number of traversed list elements
+* Use a `stack_ (ref 0)` to stores the number of traversed list elements
+
+---
+# Locality and function types
+
+```ocaml
+Base.List.length;;
+```
+```ocaml
+fun () -> let local_ foo = [1;2;3] in let len = Base.List.length foo in len;;
+```
+```ocaml
+let foo = [3; 4; 5];;
+```
+```ocaml
+Base.List.length foo;;
+```
+```ocaml
+let local_list : int -> local_ int list =
+  fun n -> exclave_ Base.List.init n ~f:Fun.id;;
+```
+```ocaml
+List.length (local_list 3);;
+```
+```ocaml
+Base.List.length (local_list 3);;
+```
 
 ---
 # Taking a look at _Hello World_
@@ -168,22 +115,61 @@ let f3 : local_ string -> local_ int * int = fun _ -> exclave_ (3, 14);;
 ```
 
 ```ocaml
-let top : (s -> local_ int * int) -> unit = fun f -> assert false
-let lft : (string -> int * int) -> unit = fun f -> assert false
-let rht : (local_ string -> local_ int * int) -> unit = fun f -> assert false
-let bot : (local_ string -> int * int) -> unit = fun f -> assert false
+let top : (s -> local_ int * int) -> unit = fun f -> ()
+let lft : (string -> int * int) -> unit = fun f -> ()
+let rht : (local_ string -> local_ int * int) -> unit = fun f -> ()
+let bot : (local_ string -> int * int) -> unit = fun f -> ()
 ```
 
 Verify mode “subtyping” rules
 
+---
+# The `unfold` function
+
+```ocaml
+let rec unfold : ('a -> ('b * 'a) option) -> 'a -> 'b list = fun f x ->
+  match f x with
+    | Some (y, x) -> y :: unfold f x
+    | None -> []
+```
+
+- Observation: `'a` values are transient. They're only needed to construct the list. They could be allocated on the stack.
+- Exercise: Adapt `unfold` to OxCaml such that `'a` values are allocated on the stack
+
+---
+# The `list_show` function
+
+```ocaml
+let list_show : ('a -> string) -> 'a list -> string = fun f u ->
+  let rec loop : string -> 'a list -> string = fun acc u ->
+    match u with
+    | [] -> acc
+    | x :: u -> loop (acc ^ f x) u in
+  loop "" u
+```
+
+- Observation: `string` values produced by the `'a -> string` function are copied into the result. They could be allocated on the stack.
+- Exercise: Adapt `list_show` to OxCaml such that `string` values are allocated on the stack
+
+---
+# The `with_file` function
+
+```ocaml
+val with_file : (in_channel -> 'a) -> string -> 'a
+```
+
+- Idea: `with_file f filename` opens `filename`, processes it using `f` and closes the channel
+- Problem: In stock OCaml `f` may leak the `in_channel` value
+- Promise: Use OxCaml and make `with_file` require a `local_` parameter call-back
+- Task: Let's do that
+- Catch: You can't: there's no suitable `open` with `local_` parameter in `Base`
+- Work-around: Simulate a file system with an array to prove the point
 
 ---
 # In the next episodes
 
-* Longer examples
-* Locality and closures
+* [Locality 3](03_local_3.html)
 * Locality and mutability
 * Locality and tail calls
 * Locality, currying and partial applications
 * `[@local_opt]` limited mode polymorphism
-* More on `exclave_`

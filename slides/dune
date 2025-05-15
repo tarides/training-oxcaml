@@ -19,3 +19,21 @@
   (with-stdout-to
    %{target}
    (run ./remark.exe %{deps} "OxCaml 01 — Locality 1"))))
+
+(rule
+ (deps 02_local_2.md)
+ (target 02_local_2.html)
+ (mode promote)
+ (action
+  (with-stdout-to
+   %{target}
+   (run ./remark.exe %{deps} "OxCaml 02 — Locality 2"))))
+
+(rule
+ (deps 03_local_3.md)
+ (target 03_local_3.html)
+ (mode promote)
+ (action
+  (with-stdout-to
+   %{target}
+   (run ./remark.exe %{deps} "OxCaml 03 — Locality 3"))))
