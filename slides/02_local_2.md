@@ -82,11 +82,28 @@ let () =
   print_endline global_message
 ;;
 ```
+
+---
+# Tail calls
+
+```ocaml
+fun () ->
+  let local_ s = "abc" in
+  Base.String.globalize s;;
+```
+
+```ocaml
+fun () ->
+  let local_ s = "abc" in
+  let ret = Base.String.globalize s in
+  ret;;
+```
+
 ---
 # Locality Mode Ordering
 
-* Key idea: a heap allocated value may respect the `local` contract
-* Examples: `map`, `fold` and `bind` higher-order parameters
+* Key idea: a heap allocated value may respect the locality contract
+* Examples: higher-order parameter of `map`, `fold` and `bind`
 * It's always possible to promote a value from `global` to `local`
 * This is expressed by and order on locality modes
 
