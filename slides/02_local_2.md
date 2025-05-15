@@ -187,6 +187,5 @@ val with_file : (in_channel -> 'a) -> string -> 'a
 
 * [Locality 3](03_local_3.html)
 * Locality and mutability
-* Locality and tail calls
 * Locality, currying and partial applications
 * `[@local_opt]` limited mode polymorphism
