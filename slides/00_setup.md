@@ -90,3 +90,8 @@ Not using versions numbers to let `opam` pick the up-to-date `+jst` ones.
 
 * OxCaml with `dune pkg` &mdash; Update from @maiste expected soon.
 * OxCaml with Nix
+
+---
+# In the next episodes
+
+* [Locality 1](01_local_1.html)
