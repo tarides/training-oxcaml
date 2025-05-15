@@ -86,11 +86,7 @@ opam install ocaml-lsp-server merlin utop ocamlformat
 Not using versions numbers to let `opam` pick the up-to-date `+jst` ones.
 
 ---
-# `dune pkg`
+# Works in Progress
 
-Work in progress. Update from @maiste expected soon.
-
----
-# OxCaml with Nix
-
-Work in progress.
+* OxCaml with `dune pkg` &mdash; Update from @maiste expected soon.
+* OxCaml with Nix
