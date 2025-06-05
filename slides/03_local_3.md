@@ -2,22 +2,133 @@
 ---
 # Previously
 
-* [Set-up](00_setup.html)
-* [Locality 1](01_local_1.html)
-* [Locality 2](02_local_2.html)
+* Slides an materials: [`https://github.com/tarides/training-oxcaml`](https://github.com/tarides/training-oxcaml)
+  - `src`: examples
+  - `slides`: slides
+* April 30, 2025 [Set-up](00_setup.html)
+* April 30, 2025 [Locality 1](01_local_1.html)
+  - Syntax
+  - Lifetimes, regions and allocation
+  - First examples
+* May 15, 2025 [Locality 2](02_local_2.html)
+  - List length
+  - Hello World and `globalize`
+  - Tail calls
+  - Locality and function types
+  - `unfold`
+
+---
+# The `list_show` function
+
+```ocaml
+let list_show : ('a -> string) -> 'a list -> string = fun f u ->
+  let rec loop : string -> 'a list -> string = fun acc u ->
+    match u with
+    | [] -> acc
+    | x :: u -> loop (acc ^ f x) u in
+  loop "" u
+```
+
+- Observation: `string` values produced by the `'a -> string` function are copied into the result. They could be allocated on the stack.
+- Exercise: Adapt `list_show` to OxCaml such that `string` values are allocated on the stack
+
+---
+# The `with_file` function
+
+What's the problem?
+
+```ocaml
+let with_file f filename =
+    let cin = open_in filename in
+    f cin;
+    close_in cin
+```
+
+---
+# The `with_file` function
+
+```ocaml
+val with_file : (in_channel -> 'a) -> string -> 'a
+```
+
+- Idea: `with_file f filename` opens `filename`, processes it using `f` and closes the channel
+- Problem: In stock OCaml `f` may leak the `in_channel` value
+- Promise: Use OxCaml and make `with_file` require a `local_` parameter call-back
+- Task: Let's do that
+- Catch: You can't: there's no suitable `open` with `local_` parameter in `Base`
+- Work-around: Simulate a file system with an array to prove the point
 
 ---
 # Mutability
 
----
-# Tail calls
+* Currently, mutable fields and array cells are always global
+* References can be local
+
+* This is go
+
+```ocaml
+fun () -> let local_ r = ref 42 in !r
+```
+
+* This is no go
+
+```ocaml
+fun () -> let local_ r = ref 42 in r
+```
 
 ---
-* Locality and mutability
-* Locality and tail calls
-* Locality, currying and partial applications
+# Curried Functions and Partial Applications
 
-rk-around: Simulate a file system with an array to prove the point
+* 20th century FP languages
+
+```
+a -> b -> c ≅ a -> (b -> c)
+```
+
+* OxCaml
+
+```
+local_ a -> b -> c ≆ local_ a -> (b -> c)
+```
+
+```
+local_ a -> b -> c ≅ local_ a -> local_ (b -> c)
+
+local_ (a -> b -> c -> d) -> e -> f -> g
+≅
+local_ (a -> local_ (b -> local_ (c -> d))) -> local_ (e -> local_ (f -> g))
+
+```
+
+* Global closure can't capture local values
+* Curried function must return local closure to capture earlier arguments
+
+---
+# Mode Crossing
+
+* OCaml has two kinds of values, distinguished by their lowest-bit
+  - Immediate (0), on stack: `bool`, `int` and constructors s.a. `[]`, `()`, `None`
+  - Pointers (1), on heap: the rest
+
+* Locality doesn't apply to immediate values
+
+> **Locality** is **irrelevant** for **types that never cause allocation** on
+> the OCaml heap, like `int`. Values of such types **mode cross** on the
+> locality axis; they may be used as `global` even when they are `local`.
+
+* `let local_ answer = 42` is meaningless
+
+---
+# Locality Summary
+
+* `local` value doesn't escape its region, MAY be allocated on the stack
+* `global` < `local`: heap allocated value can be promoted to local
+* `local` parameter is not a requirement, it's a warranty
+* Tricky
+  - Tail calls
+  - No mode polymorphism. Submoding and _contravariance_
+  - Curried functions
+  - Mode crossing
 
 ---
 # In the next episodes

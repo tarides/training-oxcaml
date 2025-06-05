@@ -5,7 +5,7 @@
 * Slides an materials: [`https://github.com/tarides/training-oxcaml`](https://github.com/tarides/training-oxcaml)
   - `src`: examples
   - `slides`: slides
-* [Set-up](00_setup.html)
+* April 30, 2025 [Set-up](00_setup.html)
 
 ---
 # Locality Mode OxCaml
