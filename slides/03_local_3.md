@@ -124,6 +124,8 @@ local_ (a -> local_ (b -> local_ (c -> d))) -> local_ (e -> local_ (f -> g))
 * `local` value doesn't escape its region, MAY be allocated on the stack
 * `global` < `local`: heap allocated value can be promoted to local
 * `local` parameter is not a requirement, it's a warranty
+* No heap to stack pointer
+* Global function can't capture local values
 * Tricky
   - Tail calls
   - No mode polymorphism. Submoding and _contravariance_
