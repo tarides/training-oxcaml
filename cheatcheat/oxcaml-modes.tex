@@ -1,0 +1,179 @@
+% !TEX program = xelatex
+
+\documentclass{article}
+\usepackage[letterpaper,margin=5mm]{geometry}
+\usepackage{array}
+\usepackage{ragged2e}
+\usepackage{concmath-otf}
+\usepackage{enumitem}
+
+\newlength{\mycolwidth}
+\setlength{\mycolwidth}{0.45\textwidth}
+
+\newlength{\mymergedcolwidth}
+\setlength{\mymergedcolwidth}{\dimexpr 2\mycolwidth + 2\tabcolsep + \arrayrulewidth \relax}
+
+\newsavebox{\inequalityBox}
+\newsavebox{\titleBox}
+\newlength{\mycellcontentheight}
+
+\setlist[itemize]{itemsep=0pt}
+
+\begin{document}
+
+\setlength{\mycellcontentheight}{\dimexpr ((\textheight - 4\arrayrulewidth - 21mm) / 5) \relax}
+
+\noindent
+{\centering
+\renewcommand{\arraystretch}{1.0}\parskip=0pt
+\begin{tabular}{p{\mycolwidth}|p{\mycolwidth}}
+% --- Row 1: Merged Cell --- Locality ---
+\multicolumn{2}{p{\mymergedcolwidth}}{
+  \begin{minipage}[t][\mycellcontentheight][s]{\mymergedcolwidth}
+  \vspace*{1.5mm}
+  {%
+    \sbox{\inequalityBox}{\texttt{global} $<$ \textbf{\texttt{local}}}
+    \sbox{\titleBox}{{\large\bfseries Locality}}
+    \hspace*{\dimexpr.5\linewidth-.5\wd\inequalityBox\relax}\usebox{\inequalityBox}\hfill\usebox{\titleBox}\par
+  }%
+  {\RaggedLeft \footnotesize \textit{future} \par}
+  \vfill
+  \begin{itemize}
+    \item \texttt{local} \textsc{safety}: will not outlive its region, may be stack allocated
+    \item \texttt{local} \textsc{requirement}: do not escape region
+    \item In function type, \texttt{local} parameter isn't a requirement, it's a guarantee
+    \item \texttt{global} function can't capture \texttt{local} values
+    \item No heap to stack pointer
+    \item \textsc{Xing}: Applies to non immediate data
+  \end{itemize}
+  \vspace*{1.5mm}
+  \end{minipage}%
+} \\
+\hline
+% --- Row 2: Two Cells --- Uniqueness, Affinity ---
+  \begin{minipage}[t][\mycellcontentheight][s]{\mycolwidth}
+  \vspace*{1.5mm}
+  {\RaggedRight {\large\bfseries Uniqueness} \hfill {\texttt{unique} $<$ \texttt{aliased}} \par}
+  {\RaggedRight \footnotesize \textit{past} \par}
+  \vfill
+  \begin{itemize}
+    \item \texttt{unique} \textsc{lineage}: has not been aliased
+    \item \texttt{unique} \textsc{entitlement}: may be overwritten
+    \item \textsc{Xing}: Applies mutable and mutable containing data
+  \end{itemize}
+  \vspace*{1.5mm}
+  \end{minipage}
+&
+  \begin{minipage}[t][\mycellcontentheight][s]{\mycolwidth}
+  \vspace*{1.5mm}
+  {\RaggedLeft {\small \texttt{many} $<$ \texttt{once}} \hfill {\large\bfseries Affinity} \par}
+  {\RaggedLeft \footnotesize \textit{future} \par}
+  \vfill
+  \begin{itemize}
+    \item \texttt{once} \textsc{safety}: function will not create an alias
+    \item \texttt{once} \textsc{requirement}: zero or one call allowed
+    \item \texttt{many} function can't capture \texttt{unique} values
+    \item Function capturing \texttt{unique} is \texttt{once}
+    \item \textsc{Xing}: Applies to functions and function containers
+  \end{itemize}
+  \vspace*{1.5mm}
+  \end{minipage}%
+ \\
+\hline
+% --- Row 3: Two Cells --- Contention, Portability ---
+  \begin{minipage}[t][\mycellcontentheight][s]{\mycolwidth}
+  \vspace*{1.5mm}
+  {\RaggedRight {\large\bfseries Contention} \hfill {\texttt{uncontended} $<$ \texttt{shared} $<$ \texttt{contended}} \par}
+  {\RaggedRight \footnotesize \textit{past} \par}
+  \vfill
+  \begin{itemize}
+    \item Non \texttt{contended} \textsc{lineage}: value retains access lock
+    \item \textsc{Entitlement}:
+      \begin{itemize}
+        \item \texttt{uncontended}: may be read or written
+        \item \texttt{share}: may only be read
+      \end{itemize}
+    \item \textsc{Xing}: Applies mutable and mutable containing data
+  \end{itemize}
+  \vspace*{1.5mm}
+  \end{minipage}
+&
+  \begin{minipage}[t][\mycellcontentheight][s]{\mycolwidth}
+  \vspace*{1.5mm}
+  {\RaggedLeft {\small \texttt{portable} $<$ \texttt{nonportable}} \hfill {\large\bfseries Portability} \par}
+  {\RaggedLeft \footnotesize \textit{future} \par}
+  \vfill
+  \begin{itemize}
+    \item \texttt{nonportable} \textsc{safety}: function will not break captured non \texttt{contended} lineage
+    \item \texttt{nonportable} \textsc{requirement}: ...
+    \item \texttt{portable} function can't capture non \texttt{contended} value
+    \item Function capturing non \texttt{contended} is \texttt{nonportable}
+    \item \textsc{Xing}: Applies to functions and function containers
+  \end{itemize}
+  \vspace*{1.5mm}
+  \end{minipage}
+ \\
+\hline
+% --- Row 4: Merged Cell --- Yielding ---
+\multicolumn{2}{p{\mymergedcolwidth}}{%
+  \begin{minipage}[t][\mycellcontentheight][s]{\mymergedcolwidth}
+  \vspace*{1.5mm}
+  {%
+    \sbox{\inequalityBox}{\texttt{unyielding} $<$ \textbf{\texttt{yielding}}}%
+    \sbox{\titleBox}{{\large\bfseries Yielding}}%
+    \hspace*{\dimexpr.5\linewidth-.5\wd\inequalityBox\relax}\usebox{\inequalityBox}\hfill\usebox{\titleBox}\par
+  }%
+  {\RaggedLeft \footnotesize \textit{future} \par}
+  \vfill
+  \begin{itemize}
+    \item \texttt{yielding} \textsc{safety}: function will not perform effect handled in parent stack
+    \item \texttt{yielding} \textsc{requirement}: ...
+    \item \textsc{Xing}: Applies to functions and function containers
+  \end{itemize}
+  \vspace*{1.5mm}
+  \end{minipage}
+} \\
+\hline
+% --- Row 5: Two Cells --- Visibility, Statefulness ---
+  \begin{minipage}[t][\mycellcontentheight][s]{\mycolwidth}
+  \vspace*{1.5mm}
+  {\RaggedRight {\large\bfseries Visibility} \hfill {\texttt{read\_write} $<$ \texttt{read} $<$ \texttt{immutable}} \par}
+  {\RaggedRight \footnotesize \textit{past} \par}
+  \vfill
+  \begin{itemize}
+    \item Non \texttt{immutable} \textsc{Lineage}: value ...
+    \item \textsc{Entitlement}:
+      \begin{itemize}
+        \item \texttt{read\_write}: may be read or written
+        \item \texttt{read}: may only be read
+      \end{itemize}
+    \item \textsc{Xing}: Applies to mutable and mutable containing data
+  \end{itemize}
+  \vspace*{1.5mm}
+  \end{minipage}
+&
+  \begin{minipage}[t][\mycellcontentheight][s]{\mycolwidth}
+  \vspace*{1.5mm}
+  {\RaggedLeft {\texttt{stateless} $<$ \texttt{observing} $<$ \texttt{stateful}} \hfill {\large\bfseries Statefulness} \par}
+  {\RaggedLeft \footnotesize \textit{future} \par}
+  \vfill
+  \begin{itemize}
+    \item \textsc{Safety}:
+      \begin{itemize}
+        \item \texttt{observing}: will not W on captured \texttt{read\_write} data
+\       \item \texttt{stateful}: will not read or write over captured non \texttt{immutable} data
+      \end{itemize}
+    \item \textsc{Requirement}:
+      \begin{itemize}
+        \item \texttt{observing}: no write
+        \item \texttt{stateful}: value ...
+      \end{itemize}
+    \item \textsc{Xing}: Applies to functions and function containers
+  \end{itemize}
+  \vspace*{1.5mm}
+   \end{minipage}
+ \\
+\end{tabular}\par}
+
+
+\end{document}

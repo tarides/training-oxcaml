@@ -1,0 +1,5 @@
+(rule
+  (target oxcaml-modes.pdf)
+  (deps oxcaml-modes.tex)
+  (mode promote)
+  (action (run xelatex %{dep:oxcaml-modes.tex})))

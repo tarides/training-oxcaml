@@ -31,6 +31,7 @@ let list_show : ('a -> string) -> 'a list -> string = fun f u ->
 
 - Observation: `string` values produced by the `'a -> string` function are copied into the result. They could be allocated on the stack.
 - Exercise: Adapt `list_show` to OxCaml such that `string` values are allocated on the stack
+- `val list_show : ('a -> local_ string) -> 'a list -> string`
 
 ---
 # The `with_file` function
