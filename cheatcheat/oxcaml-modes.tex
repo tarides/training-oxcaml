@@ -41,10 +41,10 @@
   \begin{itemize}
     \item \texttt{local} \textsc{safety}: will not outlive its region, may be stack allocated
     \item \texttt{local} \textsc{requirement}: do not escape region
-    \item In function type, \texttt{local} parameter isn't a requirement, it's a guarantee
+    \item \texttt{local} parameter isn't a requirement, it's a behavior guarantee
     \item \texttt{global} function can't capture \texttt{local} values
     \item No heap to stack pointer
-    \item \textsc{Xing}: Applies to non immediate data
+    \item \textsc{Xing}: Applies only to non immediate data
   \end{itemize}
   \vspace*{1.5mm}
   \end{minipage}%
@@ -59,7 +59,7 @@
   \begin{itemize}
     \item \texttt{unique} \textsc{lineage}: has not been aliased
     \item \texttt{unique} \textsc{entitlement}: may be overwritten
-    \item \textsc{Xing}: Applies mutable and mutable containing data
+    \item \textsc{Xing}: Applies only to mutable and mutable containing data
   \end{itemize}
   \vspace*{1.5mm}
   \end{minipage}
@@ -74,7 +74,7 @@
     \item \texttt{once} \textsc{requirement}: zero or one call allowed
     \item \texttt{many} function can't capture \texttt{unique} values
     \item Function capturing \texttt{unique} is \texttt{once}
-    \item \textsc{Xing}: Applies to functions and function containers
+    \item \textsc{Xing}: Applies only to functions and function containers
   \end{itemize}
   \vspace*{1.5mm}
   \end{minipage}%
@@ -93,7 +93,7 @@
         \item \texttt{uncontended}: may be read or written
         \item \texttt{share}: may only be read
       \end{itemize}
-    \item \textsc{Xing}: Applies mutable and mutable containing data
+    \item \textsc{Xing}: Applies only to mutable and mutable containing data
   \end{itemize}
   \vspace*{1.5mm}
   \end{minipage}
@@ -108,7 +108,7 @@
     \item \texttt{nonportable} \textsc{requirement}: ...
     \item \texttt{portable} function can't capture non \texttt{contended} value
     \item Function capturing non \texttt{contended} is \texttt{nonportable}
-    \item \textsc{Xing}: Applies to functions and function containers
+    \item \textsc{Xing}: Applies only to functions and function containers
   \end{itemize}
   \vspace*{1.5mm}
   \end{minipage}
@@ -128,7 +128,7 @@
   \begin{itemize}
     \item \texttt{yielding} \textsc{safety}: function will not perform effect handled in parent stack
     \item \texttt{yielding} \textsc{requirement}: ...
-    \item \textsc{Xing}: Applies to functions and function containers
+    \item \textsc{Xing}: Applies only to functions and function containers
   \end{itemize}
   \vspace*{1.5mm}
   \end{minipage}
@@ -147,7 +147,7 @@
         \item \texttt{read\_write}: may be read or written
         \item \texttt{read}: may only be read
       \end{itemize}
-    \item \textsc{Xing}: Applies to mutable and mutable containing data
+    \item \textsc{Xing}: Applies only to mutable and mutable containing data
   \end{itemize}
   \vspace*{1.5mm}
   \end{minipage}
@@ -168,7 +168,7 @@
         \item \texttt{observing}: no write
         \item \texttt{stateful}: value ...
       \end{itemize}
-    \item \textsc{Xing}: Applies to functions and function containers
+    \item \textsc{Xing}: Applies only to functions and function containers
   \end{itemize}
   \vspace*{1.5mm}
    \end{minipage}
