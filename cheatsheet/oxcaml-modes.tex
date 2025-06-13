@@ -20,23 +20,24 @@
 }
 
 % --- Row 1 --- n.a. --- Locality ---
+  \rotatebox[origin=t]{90}{\textbf{Stack Allocation}}
 &
   \hfill{\large\bfseries n.a.}\hfill\null
 & {
 \begin{minipage}[c][0.18\textheight][s]{\linewidth}
   {\small\texttt{\textit{global} < local}}\hfill{\large\bfseries Locality}\\{\footnotesize\null\hfill future} \\
   \vfill
-  \textsc{safety}: \texttt{local} will not outlive its region \\
-  \textsc{requirement}: don't make \texttt{local} escape it's region \\
+  \textsc{Safety}: \texttt{local} will not outlive its region \\
+  \textsc{Not allowed}: return, escape, global store or capture \\
   \texttt{local} parameter isn't requirement, it's behavior guarantee \\
-  \texttt{global} function can't capture \texttt{local} values \\
+  \textsc{Legacy no capture/nest}: \texttt{local} \\
   Applies to non immediate values
 \end{minipage}
 } \\ \hline\hline
 
 % --- Row 2 ---
-& \hfill{\bfseries Applies to mutable data}\hfill\null
-& \hfill{\bfseries Applies to functions}\hfill\null
+& \hfill{\bfseries Applies to mutable or mutable nesting data}\hfill\null
+& \hfill{\bfseries Applies to functions or function nesting data}\hfill\null
 \\ \hline
 
 % --- Row 3 --- Uniqueness, Affinity ---
@@ -46,18 +47,17 @@
   {\large\bfseries Uniqueness}\hfill{\small\texttt{unique < \textit{aliased}}} \\
   {\footnotesize past}
   \vfill
-  \textsc{lineage}: \texttt{unique} has not been aliased \\
-  \textsc{entitlement}: \texttt{unique} may be overwritten
+  \textsc{Lineage}: \texttt{unique} has not been aliased \\
+  \textsc{Allowed}: \texttt{unique} may be overwritten
 \end{minipage}
 } & {
 \begin{minipage}[c][0.18\textheight][s]{\linewidth}
   {\small\texttt{\textit{many} < once}}\hfill{\large\bfseries Affinity}\\
   {\footnotesize\null\hfill future}
   \vfill
-  \textsc{safety}: \texttt{once} function will not create an alias \\
-  \textsc{requirement}: \texttt{once} zero or one call allowed \\
-  \texttt{\textit{many}} function can't capture \texttt{unique} values \\
-  Function capturing \texttt{unique} is \texttt{once}
+  \textsc{Safety}: \texttt{once} will not alias \texttt{unique} value\\
+  \textsc{Not allowed}: call \texttt{once} twice or more\\
+  \textsc{Legacy no capture}: \texttt{once}, \textt{unique}
 \end{minipage}
 } \\ \hline
 
@@ -68,22 +68,22 @@
   {\large\bfseries Contention}\hfill{\small\texttt{uncontended < shared < \textit{contended}}}\\
   {\footnotesize past}
   \vfill
-  \textsc{lineage}: Non \texttt{\textit{contended}} value retains access lock \\
-  \textsc{Entitlement}:
+  \textsc{Lineage}: at most one thread retains \texttt{uncontended} access \\
+  \textsc{Allowed}:
   \begin{itemize}
-    \item\texttt{uncontended}: may be read or written
-    \item\texttt{share}: may only be read
+    \item\texttt{uncontended}: thread may read or write
+    \item\texttt{share}: thread may only read
   \end{itemize}
+
 \end{minipage}
 } & {
 \begin{minipage}[c][0.18\textheight][s]{\linewidth}
   {\small\texttt{\textit{portable} < nonportable}}\hfill{\large\bfseries Portability}\\
   {\footnotesize\null\hfill future}
   \vfill
-  \textsc{safety}: \texttt{nonportable} function will not break captured non \texttt{\textit{contended}} lineage \\
-  \textsc{requirement}: \texttt{nonportable} ... \\
-  \texttt{\textit{portable}} function can't capture non \texttt{\textit{contended}} value \\
-  Function capturing non \texttt{\textit{contended}} is \texttt{nonportable}
+  \textsc{Safety}: \texttt{nonportable} will not give access to non \texttt{\textit{contended}} \\
+  \textsc{Not allowed}: call \texttt{nonportable} in another thread\\
+  \textsc{Legacy no capture}: \texttt{nonportable}, \texttt{uncontended}, \texttt{shared}
 \end{minipage}
 } \\ \hline
 
@@ -96,20 +96,20 @@
   {\small\texttt{\textit{unyielding} < yielding}}\hfill{\large\bfseries Yielding}\\
   {\footnotesize\null\hfill future}
   \vfill
-  \textsc{safety}: \texttt{yielding} function will not perform effect handled in parent stack \\
-  \textsc{requirement}: \texttt{yielding} ...
+  \textsc{Safety}: \texttt{yielding} function will not perform effect handled in parent stack \\
+  \textsc{Not allowed}: \texttt{yielding} ...
 \end{minipage}
 } \\ \hline
 
 % --- Row 6 --- Visibility, Statefulness ---
-  \rotatebox[origin=t]{90}{\textbf{I/O}}
+  \rotatebox[origin=t]{90}{\textbf{Mutable Data}}
 & {
 \begin{minipage}[c][0.18\textheight][s]{\linewidth}
   {\large\bfseries Visibility}\hfill{\small\texttt{read\_write < read < \textit{immutable}}}\\
   {\footnotesize past}
   \vfill
   \textsc{Lineage}: Non \texttt{\textit{immutable}} value ... \\
-  \textsc{Entitlement}:
+  \textsc{Allowed}:
   \begin{itemize}
     \item\texttt{read\_write}: may be read or written
     \item\texttt{read}: may only be read
@@ -122,14 +122,15 @@
   \vfill
   \textsc{Safety}:
   \begin{itemize}
-    \item\texttt{observing}: will not W on captured \texttt{read\_write} data
-    \item\texttt{stateful}: will not read or write over captured non \texttt{\textit{immutable}} data
+    \item\texttt{observing}: will not write on \texttt{read\_write} data
+    \item\texttt{stateful}: will neither read nor write on non \texttt{\textit{immutable}} data
   \end{itemize}
-  \textsc{Requirement}:
+  \textsc{Not allowed}:
   \begin{itemize}
-    \item\texttt{observing}: no write
-    \item\texttt{stateful}: value 
+    \item\texttt{observing}: write
+    \item\texttt{stateful}: 
   \end{itemize}
+  \textsc{Leg. no capt.}: \texttt{observing}, \texttt{stateful}, \texttt{read\_write}, \texttt{read} \\
 \end{minipage}
 }
 
