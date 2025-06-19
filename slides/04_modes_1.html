@@ -188,7 +188,7 @@ end
 * All functions can be called in any thread: `@@portable`
 * `map`, `extract`, `map_shared` and `extract_shared` &mdash; look alike typing, mode variations
   - `'a -> 'b` function at `local`, `once` and `portable` : single call from any thread
-  - `('a, 'k)` capsule data
+  - `('a, 'k)` capsule data (`'a` implicitly `uncontended`)
   - `'k` password
   - `'b` result
 * In `map` & `extract`, `Key.t` is `unique` therefore `f` has R/W access to `'a`
@@ -212,13 +212,13 @@ end
 <tbody>
 <tr>
 <td style="padding: 5px 10px; border-top: 1px solid black; text-align: left;"><code class="remark-inline-code">map</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a -> 'b</code></td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a @ uncontended -> 'b</code></td>
 <td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">unique</code></td>
 <td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">('b, 'k) t</code></td>
 </tr>
 <tr>
 <td style="padding: 5px 10px; border-top: 1px solid black; text-align: left;"><code class="remark-inline-code">extract</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a -> 'b @ once unique portable contended</code></td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a @ uncontended -> 'b @ once unique portable contended</code></td>
 <td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">unique</code></td>
 <td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'b @ once unique portable contended</code></td>
 </tr>
