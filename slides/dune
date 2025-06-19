@@ -37,3 +37,12 @@
   (with-stdout-to
    %{target}
    (run ./remark.exe %{deps} "OxCaml 03 — Locality 3"))))
+
+(rule
+ (deps 04_modes_1.md)
+ (target 04_modes_1.html)
+ (mode promote)
+ (action
+  (with-stdout-to
+   %{target}
+   (run ./remark.exe %{deps} "OxCaml 04 — Modes 1"))))

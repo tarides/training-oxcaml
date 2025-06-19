@@ -1,97 +1,99 @@
 
----
-# OxCaml
-
-* Jane Street's branch of OCaml
-* Oxidized OCaml, Rust-like features
-* Targetted at low-latency performances and easier code review
-* Modes
-  - Stack allocation: locality
-  - Ownership and immutable updates: uniqueness and affinity
-  - Parallelism and data race freedom: portability and containment
-  - More? `unyielding`
-* Kinds and unboxed types
-* Comprehensions
-* Miscellaneous, and counting
-  - Immutable arrays
-  - Apply and include functor to current module
+<style>
+  code.remark-inline-code {
+    font-size: 0.85em;
+  }
+</style>
 
 ---
-# Sources
+# Previously
 
-* GitHub
-  - [`tarides/training-oxcaml`](https://github.com/tarides/training-oxcaml) - Clone this
-  - `ocaml-flambda/flambda-backend`, directory [`jane/docs`](https://github.com/ocaml-flambda/flambda-backend/tree/main/jane/doc)
-  - `janestreet/opam-repository`, branch [`with-extensions`](`https://github.com/janestreet/opam-repository/tree/with-extensions`)
-* YouTube videos
-  - Chris Casinghino [Making OCaml Safe for Performance Engineering](https://youtu.be/g3qd4zpm1LA?si=rA41PUZq2ZtJKVEg)
-  - Alessio Duè [Safe Concurrency in OCaml](https://youtu.be/KKPNURUbfEE?si=qRw_l-ryq3VDSqV7)
-  - Richard Eisenberg [_Unboxed OCaml_ series](https://www.youtube.com/playlist?list=PLCiAikFFaMJrgFrWRKn0-1EI3gVZLQJtJ)
-* Jane Street Tech Blog
-  1. [Oxidizing OCaml: Locality](https://blog.janestreet.com/oxidizing-ocaml-locality/)
-  2. [Oxidizing OCaml: Rust-Style Ownership](https://blog.janestreet.com/oxidizing-ocaml-ownership/)
-  3. [Oxidizing OCaml: Data Race Freedom](https://blog.janestreet.com/oxidizing-ocaml-parallelism/)
-* Conference papers
-  - ICFP 24: [Oxidizing OCaml with Modal Memory Management](https://dl.acm.org/doi/10.1145/3674642)
-  - POPL 25: [Data Race Freedom à la Mode](https://dl.acm.org/doi/10.1145/3704859)
+* Slides an materials: [`https://github.com/tarides/training-oxcaml`](https://github.com/tarides/training-oxcaml)
+  - `src`: examples
+  - `slides`: slides
+* April 30, 2025 [Set-up](00_setup.html)
+* April 30, 2025 [Locality 1](01_local_1.html)
+* May 15, 2025 [Locality 2](02_local_2.html)
+* June 5, 2025 [Locality 3](03_local_3.html)
 
 ---
-# `opam` switch, single command
+# Modal Axis, Modes and Submoding
 
-Global switch
+<div style="display: flex; justify-content: center;">
+<table style="border-collapse: collapse;">
+<thead>
+<tr>
+<th style="padding: 5px 10px;"></th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: left;">Past</th>
+<th style="padding: 5px 10px; text-align: right;">Future</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 5px 10px; border-bottom: 3px double black; border-top: 1px solid black; border-right: 1px solid black">Stack allocation</td>
+<td style="padding: 5px 10px; border-bottom: 3px double black; text-align: left;"> </td>
+<td style="padding: 5px 10px; border-bottom: 3px double black; border-top: 1px solid black; border-left: 1px solid black; text-align: right;">Locality<br><code class="remark-inline-code"><em>global</em> < local</code></td>
+</tr>
+<tr>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black">Ownership</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;">Uniqueness <br> <code class="remark-inline-code">unique < <em>aliased</em></code> </td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-left: 1px solid black; text-align: right;">Affinity <br> <code class="remark-inline-code"><em>many</em> < once</code></td>
+</tr>
+<tr>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black">Shared Memory <br> </td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;">Contention <br> <code class="remark-inline-code">uncontended < shared < <em>contended</em></code> </td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-left: 1px solid black; text-align: right;">Portability<br> <code class="remark-inline-code"><em>portable</em> < nonportable</code></td>
+</tr>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black">Effects</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;"></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-left: 1px solid black; text-align: right;">Yielding<br><code class="remark-inline-code"><em>unyielding</em> < yielding</code></td>
+</tr>
+<tr>
+<td style="padding: 5px 10px;">Mutable Data</td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: left;">Visibility <br> <code class="remark-inline-code">read_write < read < <em>immutable</em></code> </td>
+<td style="padding: 5px 10px; text-align: right;">Statefulness <br> <code class="remark-inline-code"><em>stateless</em> < observing < stateful</code></td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 
-```shell
-opam switch create 5.2.0+flambda2 --repos oxcaml=git+https://github.com/janestreet/opam-repository.git#with-extensions,default
-
-eval $(opam env --switch "5.2.0+flambda2")
-```
-
-Local switch
-
-```shell
-opam switch create . 5.2.0+flambda2 --repos oxcaml=git+https://github.com/janestreet/opam-repository.git#with-extensions,default
-
-eval $(opam env)
-```
-
-* Tip: `opam update` with care
-* Note: There's also a `with-extensions-dev` branch
-
----
-# `opam` local switch, step by step
-
-A variant on the previous
-
-```shell
-mkdir oxcaml; cd oxcaml
-
-opam switch create . --empty
-
-eval $(opam env)
-
-opam repo add --rank=1 oxcaml git+https://github.com/janestreet/opam-repository.git#with-extensions
-
-opam switch 'set-invariant' '5.2.0+flambda2'
-```
-
-Note: For some yet to be understood reason, this does not work if there's a reachable `dune-project` file anywhere above the directory where the local switch is created.
-
----
-# Install minimum platform
-
-```shell
-opam install ocaml-lsp-server merlin utop ocamlformat
-```
-
-Not using versions numbers to let `opam` pick the up-to-date `+jst` ones.
+Note: Contented means _disputé_ in French
 
 ---
-# Works in Progress
+# Boo
 
-* OxCaml with `dune pkg` &mdash; Update from @maiste expected soon.
-* OxCaml with Nix
+* A type *crosses* a modal axis, if its values aren't affected by the axis' modes
+  1. Past axis applies to mutable or mutable nesting data
+  2. Future axis:
+     - Locality: applies non immediate data
+     - All others: applies to functions or function nesting data
+* Modes and stock OCaml
+  - Past modal axis: legacy mode is maximum value
+  - Future modal axis: legacy mode is minimum value
+* All modal axis backward compatible, except Contention
+  - `contended`
+* Modes as parameters or results
+  - Past modal axis, modes as types, input and output requirements
+  - Future modal axis: behaviour guarantee rather than input requirement
+     - Submoding allows passing a legacy-moded value as an OxCaml-moded argument
+* Past modes 
+
+* Future mode results - behaviour guarantee
+* Past mode parameters - input requirement
+* Past mode results - ?
+
+* Legacy can't caputre OxCaml (future)
+  - 
+* Shared-Memory modal axis (contention & portability) are NOT backward compatible
+  
+
+
+Future modes (except locality)
 
 ---
 # In the next episodes
 
-* [Locality 1](01_local_1.html)
+* [Linearity 1](04_linear_1.html)
+* Unicity
+* Affinity

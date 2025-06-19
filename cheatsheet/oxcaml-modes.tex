@@ -30,7 +30,7 @@
   \textsc{Safety}: \texttt{local} will not outlive its region \\
   \textsc{Not allowed}: return, escape, global store or capture \\
   \texttt{local} parameter isn't requirement, it's behavior guarantee \\
-  \textsc{Legacy no capture/nest}: \texttt{local} \\
+  \textsc{No capture/nest}: \texttt{local} in \texttt{global}\\
   Applies to non immediate values
 \end{minipage}
 } \\ \hline\hline
@@ -57,7 +57,7 @@
   \vfill
   \textsc{Safety}: \texttt{once} will not alias \texttt{unique} value\\
   \textsc{Not allowed}: call \texttt{once} twice or more\\
-  \textsc{Legacy no capture}: \texttt{once}, \textt{unique}
+  \textsc{No capture}: \texttt{once}, \textt{unique} in \textit{many}
 \end{minipage}
 } \\ \hline
 
@@ -65,25 +65,25 @@
   \rotatebox[origin=t]{90}{\textbf{Shared Memory}}
 & {
 \begin{minipage}[c][0.18\textheight][s]{\linewidth}
-  {\large\bfseries Contention}\hfill{\small\texttt{uncontended < shared < \textit{contended}}}\\
+  {\large\bfseries Contention}\hfill{\small\texttt{\textit{uncontended} < shared < contended}}\\
   {\footnotesize past}
   \vfill
-  \textsc{Lineage}: at most one thread retains \texttt{uncontended} access \\
-  \textsc{Allowed}:
+  \textsc{Lineage}: at most one thread retains \texttt{\textit{uncontended}} access \\
+  \textsc{Allowed / Not allowed}:
   \begin{itemize}
-    \item\texttt{uncontended}: thread may read or write
+    \item\texttt{\textit{uncontended}}: thread may read or write
     \item\texttt{share}: thread may only read
+    \item\texttt{contended}, thread may neither read nor write
   \end{itemize}
-
 \end{minipage}
 } & {
 \begin{minipage}[c][0.18\textheight][s]{\linewidth}
-  {\small\texttt{\textit{portable} < nonportable}}\hfill{\large\bfseries Portability}\\
+  {\small\texttt{portable < \textit{nonportable}}}\hfill{\large\bfseries Portability}\\
   {\footnotesize\null\hfill future}
   \vfill
-  \textsc{Safety}: \texttt{nonportable} will not give access to non \texttt{\textit{contended}} \\
-  \textsc{Not allowed}: call \texttt{nonportable} in another thread\\
-  \textsc{Legacy no capture}: \texttt{nonportable}, \texttt{uncontended}, \texttt{shared}
+  \textsc{Safety}: \texttt{\textit{nonportable}} will not give access to non \texttt{contended} \\
+  \textsc{Not allowed}: call \texttt{\textit{nonportable}} in another thread\\
+  \textsc{No capture}: \texttt{\textit{nonportable}}, \texttt{\textit{uncontended}}, \texttt{shared} in \texttt{portable}
 \end{minipage}
 } \\ \hline
 

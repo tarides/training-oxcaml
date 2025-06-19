@@ -1,4 +1,10 @@
 
+<style>
+  code.remark-inline-code {
+    font-size: 0.85em;
+  }
+</style>
+
 ---
 # Previously
 
@@ -7,135 +13,154 @@
   - `slides`: slides
 * April 30, 2025 [Set-up](00_setup.html)
 * April 30, 2025 [Locality 1](01_local_1.html)
-  - Syntax
-  - Lifetimes, regions and allocation
-  - First examples
 * May 15, 2025 [Locality 2](02_local_2.html)
-  - List length
-  - Hello World and `globalize`
-  - Tail calls
-  - Locality and function types
-  - `unfold`
+* June 5, 2025 [Locality 3](03_local_3.html)
 
 ---
-# The `list_show` function
+# Modal Axis, Modes and Submoding
+
+<div style="display: flex; justify-content: center;">
+<table style="border-collapse: collapse;">
+<thead>
+<tr>
+<th style="padding: 5px 10px;"></th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: left;">Past</th>
+<th style="padding: 5px 10px; text-align: right;">Future</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 5px 10px; border-bottom: 3px double black; border-top: 1px solid black; border-right: 1px solid black">Stack allocation</td>
+<td style="padding: 5px 10px; border-bottom: 3px double black; text-align: left;"> </td>
+<td style="padding: 5px 10px; border-bottom: 3px double black; border-top: 1px solid black; border-left: 1px solid black; text-align: right;">Locality<br><code class="remark-inline-code"><em>global</em> < local</code></td>
+</tr>
+<tr>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black">Ownership</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;">Uniqueness <br> <code class="remark-inline-code">unique < <em>aliased</em></code> </td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-left: 1px solid black; text-align: right;">Affinity <br> <code class="remark-inline-code"><em>many</em> < once</code></td>
+</tr>
+<tr>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black">Shared Memory <br> </td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;">Contention <br> <code class="remark-inline-code"><em>uncontended</em> < shared < contended</code> </td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-left: 1px solid black; text-align: right;">Portability<br> <code class="remark-inline-code">portable < <em>nonportable</em></code></td>
+</tr>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black">Effects</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;"></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-left: 1px solid black; text-align: right;">Yielding<br><code class="remark-inline-code">unyielding < yielding</code></td>
+</tr>
+<tr>
+<td style="padding: 5px 10px;">Mutable Data</td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: left;">Visibility <br> <code class="remark-inline-code">read_write < read < immutable</code> </td>
+<td style="padding: 5px 10px; text-align: right;">Statefulness <br> <code class="remark-inline-code">stateless < observing < stateful</code></td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+Notes: Contented means _disputé_ in French.
+
+---
+# Mode Rules
+
+* Each axis has a *legacy* mode, stock OCaml behaviour
+* All axes, except `contention` & `portability`, default is backward compatibility
+* A type *crosses* a modal axis, if its values aren't affected by the axis' modes
+  1. Past axis applies to <u>mutable or mutable nesting data</u>
+  2. Future axis:
+     - Locality: applies non immediate data
+     - All others: applies to <u>functions or function nesting data</u>
+* Submoding allows passing low modes as high mode argument
+* Modes as parameters or results
+  - Past modal axis, modes as types, input and output requirements
+  - Future modal axis: behaviour guarantee rather than input requirement
+* Futured closure can't capture above its mode, or past mode, except highest
+
+---
+# Shortened `Basement.Capsule` from `base`
 
 ```ocaml
-let list_show : ('a -> string) -> 'a list -> string = fun f u ->
-  let rec loop : string -> 'a list -> string = fun acc u ->
-    match u with
-    | [] -> acc
-    | x :: u -> loop (acc ^ f x) u in
-  loop "" u
-```
+val create : unit -> Key.packed @ unique @@ portable
 
-- Observation: `string` values produced by the `'a -> string` function are copied into the result. They could be allocated on the stack.
-- Exercise: Adapt `list_show` to OxCaml such that `string` values are allocated on the stack
-- `val list_show : ('a -> local_ string) -> 'a list -> string`
+(* Means to turn [Key.t] into [Password.t] and wrap data into a [Capsule.t] *)
 
----
-# The `with_file` function
+module Data : sig
+  type ('a, 'k) t : value mod contended portable
 
-What's the problem?
+  val map :
+    password:local_ 'k Password.t ->
+    f:local_ ('a -> 'b) @ once portable ->
+    ('a, 'k) t -> ('b, 'k) t @@ portable
 
-```ocaml
-let with_file f filename =
-    let cin = open_in filename in
-    f cin;
-    close_in cin
-```
+  val extract :
+    password:local_ 'k Password.t ->
+    f:local_ ('a -> 'b @ once unique portable contended) @ once portable ->
+    ('a, 'k) t -> 'b @ once unique portable contended @@ portable
 
----
-# The `with_file` function
+  val map_shared : 'k ('a : value mod portable) 'b.
+    password:local_ 'k Password.Shared.t ->
+    f:local_ ('a @ shared -> 'b) @ once portable ->
+    ('a, 'k) t -> ('b, 'k) t @@ portable
 
-```ocaml
-val with_file : (in_channel -> 'a) -> string -> 'a
-```
-
-- Idea: `with_file f filename` opens `filename`, processes it using `f` and closes the channel
-- Problem: In stock OCaml `f` may leak the `in_channel` value
-- Promise: Use OxCaml and make `with_file` require a `local_` parameter call-back
-- Task: Let's do that
-- Catch: You can't: there's no suitable `open` with `local_` parameter in `Base`
-- Work-around: Simulate a file system with an array to prove the point
-
----
-# Mutability
-
-* Currently, mutable fields and array cells are always global
-* References can be local
-
-* This is go
-
-```ocaml
-fun () -> let local_ r = ref 42 in !r
-```
-
-* This is no go
-
-```ocaml
-fun () -> let local_ r = ref 42 in r
+  val extract_shared : 'k ('a : value mod portable) 'b.
+    password:local_ 'k Password.Shared.t ->
+    f:local_ ('a @ shared -> 'b @ portable contended) @ once portable ->
+    ('a, 'k) t -> 'b @ portable contended @@ portable
+end
 ```
 
 ---
-# Curried Functions and Partial Applications
+# `Capsule` cont'd
 
-* 20th century FP languages
+* All functions can be called in any thread: `@@portable`
+* `map`, `extract`, `map_shared` and `extract_shared` &mdash; look alike typing, mode variations
+  - `'a -> 'b` function at `local`, `once` and `portable` : single call from any thread
+  - `('a, 'k)` capsule data
+  - `'k` password
+  - `'b` result
+* In `map` & `extract`, `Key.t` is `unique` therefore `f` has R/W access to `'a`
+* In `map_shared` & `extract_shared`, `Key.t` is `aliased` therefore `f` only has R access to `'a`
+* Both extract functions returns `portable` and `contened`: mutable state can't leak
 
-```
-a -> b -> c ≅ a -> (b -> c)
-```
-
-* OxCaml
-
-```
-local_ a -> b -> c ≆ local_ a -> (b -> c)
-```
-
-```
-local_ a -> b -> c ≅ local_ a -> local_ (b -> c)
-
-local_ (a -> b -> c -> d) -> e -> f -> g
-≅
-local_ (a -> local_ (b -> local_ (c -> d))) -> local_ (e -> local_ (f -> g))
-
-```
-
-* Global closure can't capture local values
-* Curried function must return local closure to capture earlier arguments
 
 ---
-# Mode Crossing
+# `Capsule` cont'd
 
-* OCaml has two kinds of values, distinguished by their lowest-bit
-  - Immediate (0), on stack: `bool`, `int` and constructors s.a. `[]`, `()`, `None`
-  - Pointers (1), on heap: the rest
-
-* Locality doesn't apply to immediate values
-
-> **Locality** is **irrelevant** for **types that never cause allocation** on
-> the OCaml heap, like `int`. Values of such types **mode cross** on the
-> locality axis; they may be used as `global` even when they are `local`.
-
-* `let local_ answer = 42` is meaningless
-
----
-# Locality Summary
-
-* `local` value doesn't escape its region, MAY be allocated on the stack
-* `global` < `local`: heap allocated value can be promoted to local
-* `local` parameter is not a requirement, it's a warranty
-* No heap to stack pointer
-* Global function can't capture local values
-* Tricky
-  - Tail calls
-  - No mode polymorphism. Submoding and _contravariance_
-  - Curried functions
-  - Mode crossing
-
----
-# In the next episodes
-
-* [Linearity 1](04_linear_1.html)
-* Unicity
-* Affinity
+<div style="display: flex; justify-content: center;">
+<table style="border-collapse: collapse;">
+<thead>
+<tr>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; text-align: center;"></th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center;"><code class="remark-inline-code">f @ local once portable</code></th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center;"><code class="remark-inline-code">Key</code></th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center;"><code class="remark-inline-code">result</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 5px 10px; border-top: 1px solid black; text-align: left;"><code class="remark-inline-code">map</code></td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a -> 'b</code></td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">unique</code></td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">('b, 'k) t</code></td>
+</tr>
+<tr>
+<td style="padding: 5px 10px; border-top: 1px solid black; text-align: left;"><code class="remark-inline-code">extract</code></td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a -> 'b @ once unique portable contended</code></td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">unique</code></td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'b @ once unique portable contended</code></td>
+</tr>
+<tr>
+<td style="padding: 5px 10px; border-top: 1px solid black; text-align: left;"><code class="remark-inline-code">map_shared</code></td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a @ shared -> 'b</code></td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">shared</code></td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">('b, 'k) t</code></td>
+</tr>
+<tr>
+<td style="padding: 5px 10px; border-top: 1px solid black; text-align: left;"><code class="remark-inline-code">extract_shared</code></td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a @ shared -> 'b @ portable contended</code></td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">shared</code></td>
+<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'b @ portable contended</code></td>
+</tr>
+</tbody>
+</table>
+</div>

@@ -181,8 +181,8 @@ local_ (a -> local_ (b -> local_ (c -> d))) -> local_ (e -> local_ (f -> g))
 # Mode Crossing
 
 * OCaml has two kinds of values, distinguished by their lowest-bit
-  - Immediate (0), on stack: `bool`, `int` and constructors s.a. `[]`, `()`, `None`
-  - Pointers (1), on heap: the rest
+  - Immediate (1), on stack: `bool`, `int` and constructors s.a. `[]`, `()`, `None`
+  - Pointers (0), on heap: the rest
 
 * Locality doesn't apply to immediate values
 
@@ -209,9 +209,7 @@ local_ (a -> local_ (b -> local_ (c -> d))) -> local_ (e -> local_ (f -> g))
 ---
 # In the next episodes
 
-* [Linearity 1](04_linear_1.html)
-* Unicity
-* Affinity
+* [Modes 1](04_modes_1.html)
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
