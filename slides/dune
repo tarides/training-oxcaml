@@ -46,3 +46,12 @@
   (with-stdout-to
    %{target}
    (run ./remark.exe %{deps} "OxCaml 04 — Modes 1"))))
+
+(rule
+ (deps offsite.md)
+ (target offsite.html)
+ (mode promote)
+ (action
+  (with-stdout-to
+   %{target}
+   (run ./remark.exe %{deps} "OxCaml at Offsite"))))

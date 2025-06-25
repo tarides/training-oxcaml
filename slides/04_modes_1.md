@@ -23,37 +23,39 @@
 <table style="border-collapse: collapse;">
 <thead>
 <tr>
-<th style="padding: 5px 10px;"></th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; "></th>
 <th style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: left;">Past</th>
-<th style="padding: 5px 10px; text-align: right;">Future</th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; text-align: right;">Future</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="padding: 5px 10px; border-bottom: 3px double black; border-top: 1px solid black; border-right: 1px solid black">Stack allocation</td>
-<td style="padding: 5px 10px; border-bottom: 3px double black; text-align: left;"> </td>
-<td style="padding: 5px 10px; border-bottom: 3px double black; border-top: 1px solid black; border-left: 1px solid black; text-align: right;">Locality<br><code class="remark-inline-code"><em>global</em> < local</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black">Stack allocation</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;"> </td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: right;">Locality<br><code class="remark-inline-code"><em>global</em> < local</code></td>
 </tr>
 <tr>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black">Ownership</td>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;">Uniqueness <br> <code class="remark-inline-code">unique < <em>aliased</em></code> </td>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-left: 1px solid black; text-align: right;">Affinity <br> <code class="remark-inline-code"><em>many</em> < once</code></td>
-</tr>
-<tr>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black">Shared Memory <br> </td>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;">Contention <br> <code class="remark-inline-code"><em>uncontended</em> < shared < contended</code> </td>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-left: 1px solid black; text-align: right;">Portability<br> <code class="remark-inline-code">portable < <em>nonportable</em></code></td>
-</tr>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black">Effects</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black">Effects</td>
 <td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;"></td>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-left: 1px solid black; text-align: right;">Yielding<br><code class="remark-inline-code">unyielding < yielding</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: right;">Yielding<br><code class="remark-inline-code">unyielding < yielding</code></td>
+</tr>
+<tr>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black">Ownership</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;">Uniqueness <br> <code class="remark-inline-code">unique < <em>aliased</em></code> </td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: right;">Affinity <br> <code class="remark-inline-code"><em>many</em> < once</code></td>
+</tr>
+<tr>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black">Shared Memory <br> </td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;">Contention <br> <code class="remark-inline-code"><em>uncontended</em> < shared < contended</code> </td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: right;">Portability<br> <code class="remark-inline-code">portable < <em>nonportable</em></code></td>
 </tr>
 <tr>
 <td style="padding: 5px 10px;">Mutable Data</td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: left;">Visibility <br> <code class="remark-inline-code">read_write < read < immutable</code> </td>
+<td style="padding: 5px 10px; border-right: 1px solid black; border-left: 1px solid black; text-align: left;">Visibility <br> <code class="remark-inline-code">read_write < read < immutable</code> </td>
 <td style="padding: 5px 10px; text-align: right;">Statefulness <br> <code class="remark-inline-code">stateless < observing < stateful</code></td>
-</td>
 </tr>
+
+
 </tbody>
 </table>
 </div>
@@ -122,7 +124,6 @@ end
 * In `map_shared` & `extract_shared`, `Key.t` is `aliased` therefore `f` only has R access to `'a`
 * Both extract functions returns `portable` and `contened`: mutable state can't leak
 
-
 ---
 # `Capsule` cont'd
 
@@ -138,28 +139,65 @@ end
 </thead>
 <tbody>
 <tr>
-<td style="padding: 5px 10px; border-top: 1px solid black; text-align: left;"><code class="remark-inline-code">map</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a @ uncontended -> 'b</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">unique</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">('b, 'k) t</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;"><code class="remark-inline-code">map</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a @ uncontended -> 'b</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">unique</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">('b, 'k) t</code></td>
 </tr>
 <tr>
-<td style="padding: 5px 10px; border-top: 1px solid black; text-align: left;"><code class="remark-inline-code">extract</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a @ uncontended -> 'b @ once unique portable contended</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">unique</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'b @ once unique portable contended</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;"><code class="remark-inline-code">extract</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a @ uncontended -> 'b @ once unique portable contended</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">unique</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'b @ once unique portable contended</code></td>
 </tr>
 <tr>
-<td style="padding: 5px 10px; border-top: 1px solid black; text-align: left;"><code class="remark-inline-code">map_shared</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a @ shared -> 'b</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">shared</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">('b, 'k) t</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;"><code class="remark-inline-code">map_shared</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a @ shared -> 'b</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">shared</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">('b, 'k) t</code></td>
 </tr>
 <tr>
-<td style="padding: 5px 10px; border-top: 1px solid black; text-align: left;"><code class="remark-inline-code">extract_shared</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a @ shared -> 'b @ portable contended</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">shared</code></td>
-<td style="padding: 5px 10px; border-top: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'b @ portable contended</code></td>
+<td style="padding: 5px 10px; text-align: left;"><code class="remark-inline-code">extract_shared</code></td>
+<td style="padding: 5px 10px; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'a @ shared -> 'b @ portable contended</code></td>
+<td style="padding: 5px 10px; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">shared</code></td>
+<td style="padding: 5px 10px; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">'b @ portable contended</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+---
+# `{map|extract}(_shared)`
+
+```ocaml
+val {map|extract}(_shared) :
+  password:local_ 'k Password.Shared.t ->
+  f:local_ ('a @ ... -> 'b @ ...) @ once portable ->
+  ('a, 'k) t ->
+  'b @ ...
+  @@ portable
+```
+
+<div style="display: flex; justify-content: center;">
+<table style="border-collapse: collapse;">
+<thead>
+<tr>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; text-align: center; font-weight: normal;"><code class="remark-inline-code">f : &hellip; @ local once portable</code></th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; font-weight: normal;"><code class="remark-inline-code">&hellip; -&gt; 'b</code></th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; font-weight: normal;"><code class="remark-inline-code">&hellip; -&gt; 'b portable contended</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;"><code class="remark-inline-code">'a @ uncontended -&gt; &hellip;</code><br><code class="remark-inline-code">'k Password.t</code> from <code class="remark-inline-code">unique Key.t</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">map</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">extract</code></td>
+</tr>
+<tr>
+<td style="padding: 5px 10px; text-align: left;"><code class="remark-inline-code">'a @ shared -&gt;</code><br><code class="remark-inline-code">'k Password.Shared.t</code> from <code class="remark-inline-code"><code class="remark-inline-code">shared 'k Key.t</code></td>
+<td style="padding: 5px 10px; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">map_shared</code></td>
+<td style="padding: 5px 10px; border-left: 1px solid black; text-align: left;"><code class="remark-inline-code">extract_shared</code></td>
 </tr>
 </tbody>
 </table>
