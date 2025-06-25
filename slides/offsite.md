@@ -148,7 +148,7 @@ let f () =
 * No mode polymorphism! Can't use `'a -> local_ 'b` when `'a -> 'b` is needed
 
 ---
-# Curried Functions and Partial Applications
+# Curried Functions
 
 * 20th century FP languages
 
@@ -190,7 +190,7 @@ local_ (a -> local_ (b -> local_ (c -> d))) -> local_ (e -> local_ (f -> g))
 * `let local_ answer = 42 (* local_ meaningless *)`
 
 ---
-# The all-in table
+# _Tutte le modalità_
 
 <div style="display: flex; justify-content: center;">
 <table style="border-collapse: collapse;">
