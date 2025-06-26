@@ -233,7 +233,7 @@ local_ (a -> local_ (b -> local_ (c -> d))) -> local_ (e -> local_ (f -> g))
 </table>
 </div>
 
-Notes: Contented means _disputé_ in French.
+Note: Contented means _disputé_ in French.
 
 ---
 # Mode Rules
@@ -249,7 +249,7 @@ Notes: Contented means _disputé_ in French.
 * Modes as parameters or results
   - Past modal axis, modes as types, input and output requirements
   - Future modal axis: behaviour guarantee rather than input requirement
-* Futured closure can't capture above its mode, or past mode, except highest
+* The higher the closure, the lower the capture
 
 ---
 # Shortened `Basement.Capsule` from `base`
