@@ -253,7 +253,7 @@ Note: Contented means _disputé_ in French.
 * The higher the closure, the lower the capture
 
 ---
-# Capture Allowed Modes
+# Allowed Capture Modes
 
 <div style="display: flex; justify-content: center;">
 <table style="border-collapse: collapse;">
@@ -261,11 +261,11 @@ Note: Contented means _disputé_ in French.
 <tr>
 <th></th>
 <th style="padding: 5px 10px; border-right: 1px solid black;"></th>
-<th colspan="4" style="padding: 5px 10px; border-bottom: 1px solid black; text-align: center;">functions and function nesting data</th>
+<th colspan="4" style="padding: 5px 10px; border-bottom: 1px solid black; text-align: center;">Functions and function nesting</th>
 </tr>
 <tr>
 <th style="padding: 5px 10px; border-bottom: 1px solid black; "></th>
-<th style="padding: 5px 10px; border-bottom: 1px solid black; text-align: center; font-weight: normal;">Aliasing<br>Threads<br>Purity</th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; text-align: center; font-weight: bold;">Aliasing<br>Threads<br>Purity</th>
 <th style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; font-weight: normal;"><code class="remark-inline-code"><em>many</em> <br> portable<br> stateless</code></th>
 <th style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; font-weight: normal;"><code class="remark-inline-code"><br> <br>observing</code></th>
 <th style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; font-weight: normal;"><code class="remark-inline-code">once <br> <em>nonportable</em> <br> <em>stateful</em></code></th>
@@ -273,21 +273,21 @@ Note: Contented means _disputé_ in French.
 </thead>
 <tbody>
 <tr>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black; text-align: center;">a</td>
+<td rowspan="3" style="padding: 5px 10px; border-right: 1px solid black; text-align: center; vertical-align: middle; writing-mode: sideways-lr; font-weight: bold;">Mutable and mutable nesting</td>
 <td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: center;"><code class="remark-inline-code"><em>aliased</em> <br> contended <br> immutable</code></td>
 <td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; vertical-align: middle;">&check;</td>
 <td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; vertical-align: middle;">&check;</td>
 <td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; vertical-align: middle;">&check;</td>
 </tr>
 <tr>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black; text-align: center;">b</td>
+
 <td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: center;"><code class="remark-inline-code"><br>shared<br>read</code></td>
 <td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: left;"></td>
 <td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; vertical-align: middle;">&check;</td>
 <td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; vertical-align: middle;">&check;</td>
 </tr>
 <tr>
-<td style="padding: 5px 10px; border-right: 1px solid black; text-align: center;">c</td>
+
 <td style="padding: 5px 10px; text-align: center;"><code class="remark-inline-code">unique <br><em>uncontended</em> <br><em>read_write</em></code></td>
 <td style="padding: 5px 10px; border-left: 1px solid black; text-align: left;"></td>
 <td style="padding: 5px 10px; border-left: 1px solid black; text-align: left;"></td>
