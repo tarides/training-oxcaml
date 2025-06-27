@@ -141,6 +141,7 @@ fun () ->
 <table style="border-collapse: collapse;">
 <thead>
 <tr>
+<th style="padding: 5px 10px; border-bottom: 1px solid black;">No.</th>
 <th style="padding: 5px 10px;">Mode</th>
 <th style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black">Lifetime</th>
 <th style="padding: 5px 10px;">Allocation</th>
@@ -148,11 +149,13 @@ fun () ->
 </thead>
 <tbody>
 <tr>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black"><code class="remark-inline-code">global</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black; text-align: center;">1.</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black;"><code class="remark-inline-code">global</code></td>
 <td style="padding: 5px 10px;">MAY outlive its region</td>
 <td style="padding: 5px 10px; border-bottom: 1px solid black; border-top: 1px solid black; border-left: 1px solid black">MUST be on the heap</td>
 </tr>
 <tr>
+<td style="padding: 5px 10px; border-right: 1px solid black; text-align: center;">2.</td>
 <td style="padding: 5px 10px;"><code class="remark-inline-code">local</code></td>
 <td style="padding: 5px 10px; border-top: 1px solid black; border-right: 1px solid black; border-left: 1px solid black">MUST NOT outlive its region</td>
 <td style="padding: 5px 10px;">MAY be on the stack</td>
@@ -270,7 +273,7 @@ local_ (a -> local_ (b -> local_ (c -> d))) -> local_ (e -> local_ (f -> g))
 <thead>
 <tr>
 <th style="padding: 5px 10px; border-bottom: 1px solid black; "></th>
-<th style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: left;">Past</th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black; border-left: 1px solid black; text-align: left; ">Past</th>
 <th style="padding: 5px 10px; border-bottom: 1px solid black; text-align: right;">Future</th>
 </tr>
 </thead>
@@ -281,27 +284,25 @@ local_ (a -> local_ (b -> local_ (c -> d))) -> local_ (e -> local_ (f -> g))
 <td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: right;">Locality<br><code class="remark-inline-code"><em>global</em> < local</code></td>
 </tr>
 <tr>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black">Ownership</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black">Aliasing</td>
 <td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;">Uniqueness <br> <code class="remark-inline-code">unique < <em>aliased</em></code> </td>
 <td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: right;">Affinity <br> <code class="remark-inline-code"><em>many</em> < once</code></td>
 </tr>
 <tr>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black">Shared Memory <br> </td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black">Threads<br> </td>
 <td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;">Contention <br> <code class="remark-inline-code"><em>uncontended</em> < shared < contended</code> </td>
 <td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: right;">Portability<br> <code class="remark-inline-code">portable < <em>nonportable</em></code></td>
 </tr>
 <tr>
 <td style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black">Effects</td>
 <td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: left;"></td>
-<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: right;">Yielding<br><code class="remark-inline-code">unyielding < yielding</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: right;">Yielding<br><code class="remark-inline-code"><em>unyielding</em> < yielding</code></td>
 </tr>
 <tr>
-<td style="padding: 5px 10px;">Mutable Data</td>
-<td style="padding: 5px 10px; border-right: 1px solid black; border-left: 1px solid black; text-align: left;">Visibility <br> <code class="remark-inline-code">read_write < read < immutable</code> </td>
-<td style="padding: 5px 10px; text-align: right;">Statefulness <br> <code class="remark-inline-code">stateless < observing < stateful</code></td>
+<td style="padding: 5px 10px;">Purity</td>
+<td style="padding: 5px 10px; border-right: 1px solid black; border-left: 1px solid black; text-align: left;">Visibility <br> <code class="remark-inline-code"><em>read_write</em> < read < immutable</code> </td>
+<td style="padding: 5px 10px; text-align: right;">Statefulness <br> <code class="remark-inline-code">stateless < observing < <em>stateful</em></code></td>
 </tr>
-
-
 </tbody>
 </table>
 </div>
@@ -322,7 +323,53 @@ Note: Contented means _disputé_ in French.
 * Modes as parameters or results
   - Past modal axis, modes as types, input and output requirements
   - Future modal axis: behaviour guarantee rather than input requirement
-* Futured closure can't capture above its mode, or past mode, except highest
+* The higher the closure, the lower the capture
+
+---
+# Capture Allowed Modes
+
+<div style="display: flex; justify-content: center;">
+<table style="border-collapse: collapse;">
+<thead>
+<tr>
+<th></th>
+<th style="padding: 5px 10px; border-right: 1px solid black;"></th>
+<th colspan="4" style="padding: 5px 10px; border-bottom: 1px solid black; text-align: center;">functions and function nesting data</th>
+</tr>
+<tr>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; "></th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; text-align: center; font-weight: normal;">Aliasing<br>Threads<br>Purity</th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; font-weight: normal;"><code class="remark-inline-code"><em>many</em> <br> portable<br> stateless</code></th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; font-weight: normal;"><code class="remark-inline-code"><br> <br>observing</code></th>
+<th style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; font-weight: normal;"><code class="remark-inline-code">once <br> <em>nonportable</em> <br> <em>stateful</em></code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black; text-align: center;">a</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: center;"><code class="remark-inline-code"><em>aliased</em> <br> contended <br> immutable</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; vertical-align: middle;">&check;</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; vertical-align: middle;">&check;</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; vertical-align: middle;">&check;</td>
+</tr>
+<tr>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-right: 1px solid black; text-align: center;">b</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; text-align: center;"><code class="remark-inline-code"><br>shared<br>read</code></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: left;"></td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; vertical-align: middle;">&check;</td>
+<td style="padding: 5px 10px; border-bottom: 1px solid black; border-left: 1px solid black; text-align: center; vertical-align: middle;">&check;</td>
+</tr>
+<tr>
+<td style="padding: 5px 10px; border-right: 1px solid black; text-align: center;">c</td>
+<td style="padding: 5px 10px; text-align: center;"><code class="remark-inline-code">unique <br><em>uncontended</em> <br><em>read_write</em></code></td>
+<td style="padding: 5px 10px; border-left: 1px solid black; text-align: left;"></td>
+<td style="padding: 5px 10px; border-left: 1px solid black; text-align: left;"></td>
+<td style="padding: 5px 10px; border-left: 1px solid black; text-align: center; vertical-align: middle;">&check;</td>
+</tr>
+</tbody>
+</table>
+</div>
+
 
 ---
 # Shortened `Basement.Capsule` from `base`
@@ -449,7 +496,6 @@ val {map|extract}(_shared) :
 </tbody>
 </table>
 </div>
-
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
