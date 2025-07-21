@@ -105,32 +105,32 @@
   \rotatebox[origin=t]{90}{\textbf{Mutable Data}}
 & {
 \begin{minipage}[c][0.18\textheight][s]{\linewidth}
-  {\large\bfseries Visibility}\hfill{\small\texttt{read\_write < read < \textit{immutable}}}\\
+  {\large\bfseries Visibility}\hfill{\small\texttt{\textit{read\_write} < read < immutable}}\\
   {\footnotesize past}
   \vfill
-  \textsc{Lineage}: Non \texttt{\textit{immutable}} value ... \\
+  \textsc{Lineage}: Non \texttt{immutable} value ... \\
   \textsc{Allowed}:
   \begin{itemize}
-    \item\texttt{read\_write}: may be read or written
+    \item\texttt{\textit{read\_write}}: may be read or written
     \item\texttt{read}: may only be read
   \end{itemize}
 \end{minipage}
 } & {
 \begin{minipage}[c][0.18\textheight][s]{\linewidth}
-  {\small\texttt{\textit{stateless} < observing < stateful}}\hfill{\large\bfseries Statefulness}\\
+  {\small\texttt{stateless < observing < \textit{stateful}}}\hfill{\large\bfseries Statefulness}\\
   {\footnotesize\null\hfill future}
   \vfill
   \textsc{Safety}:
   \begin{itemize}
-    \item\texttt{observing}: will not write on \texttt{read\_write} data
-    \item\texttt{stateful}: will neither read nor write on non \texttt{\textit{immutable}} data
+    \item\texttt{observing}: will not write on \texttt{\textit{read\_write}} data
+    \item\texttt{\textit{stateful}}: will neither read nor write on non \texttt{immutable} data
   \end{itemize}
   \textsc{Not allowed}:
   \begin{itemize}
     \item\texttt{observing}: write
-    \item\texttt{stateful}: 
+    \item\texttt{\textit{stateful}}: 
   \end{itemize}
-  \textsc{Leg. no capt.}: \texttt{observing}, \texttt{stateful}, \texttt{read\_write}, \texttt{read} \\
+  \textsc{Leg. no capt.}: \texttt{observing}, \texttt{\textit{stateful}}, \texttt{\textit{read\_write}}, \texttt{read} \\
 \end{minipage}
 }
 
